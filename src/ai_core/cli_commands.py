@@ -65,6 +65,9 @@ def register_commands(cli_app: typer.Typer) -> None:
         else:
             result = chain.invoke(input)
             pprint(result)
+        except ValueError as e:
+            print(f"Error: {str(e)}")
+            print("Please check your LLM configuration and parameters")
 
     @cli_app.command()
     def run(
