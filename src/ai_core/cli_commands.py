@@ -7,13 +7,11 @@ from devtools import pprint
 from langchain.globals import set_debug, set_verbose
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import Runnable
-
-# Import modules where runnables are registered
 from typer import Option
 
 from src.ai_core.cache import LlmCache
 from src.ai_core.chain_registry import ChainRegistry
-from src.ai_core.embeddings import EmbeddingsFactory
+from src.ai_core.embeddings import EmbeddingsFactory, get_embeddings
 from src.ai_core.llm import LlmFactory
 from src.ai_core.vector_store import VectorStoreFactory
 from src.utils.config_mngr import global_config
@@ -43,21 +41,17 @@ def register_commands(cli_app: typer.Typer) -> None:
         set_verbose(lc_verbose)
         LlmCache.set_method(cache)
 
-        if llm_id is not None:
-            if llm_id not in LlmFactory.known_items():
-                print(f"Error: {llm_id} is unknown llm_id.\nShould be in {LlmFactory.known_items()}")
-                return
-            global_config().set("llm.default_model", llm_id)
-
         # Check if executed as part ot a pipe
         if not input and not sys.stdin.isatty():
             input = sys.stdin.read()
         if not input or len(input) < 5:
             print("Error: Input parameter or something in stdin is required")
             return
+        
+        # print a clear message in case of Velue Error exception AI!
 
         llm = LlmFactory(
-            llm_id=llm_id or global_config().get_str("llm.default_model"),
+            llm_id=llm_id,
             json_mode=False,
             streaming=stream,
             cache=cache,
@@ -195,3 +189,22 @@ def register_commands(cli_app: typer.Typer) -> None:
         data = [llm.model_dump() for llm in LlmFactory.known_list()]
         with open(file_name, "w") as file:
             yaml.dump(data, file, default_flow_style=False, allow_unicode=True)
+
+    @cli_app.command()
+    def embedd(
+        input: str,
+        model_id: Annotated[Optional[str], Option("--llm-id", "-m")] = None,
+    ) -> None:
+        """
+        Invoke an embedded.
+        """
+        if model_id is not None:
+            if model_id not in EmbeddingsFactory.known_items():
+                print(f"Error: {model_id} is unknown llm_id.\nShould be in {EmbeddingsFactory.known_items()}")
+                return
+            global_config().set("llm.default_model", model_id)
+
+        embedder = get_embeddings(embeddings_id=model_id)
+        vector = embedder.embed_documents([input])
+        print(f"{vector[0][:20]}...")
+        print(f"length: {len(vector[0])}")
