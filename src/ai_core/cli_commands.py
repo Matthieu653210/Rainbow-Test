@@ -57,10 +57,20 @@ def register_commands(cli_app: typer.Typer) -> None:
                 llm_params={"temperature": temperature},
             ).get()
         except ValueError as e:
-            # nicer message, using rich, and without "    For further information visit https://errors.pydantic.dev/2.11/v/value_error" 
-            # AI!
-            print(f"Error: {str(e)}")
-            print("Please check your LLM configuration and parameters")
+            from rich.console import Console
+            from rich.panel import Panel
+            
+            console = Console()
+            error_msg = str(e).split("\n")[0]  # Take only the first line of error
+            console.print(
+                Panel(
+                    f"[bold red]Error:[/] {error_msg}\n"
+                    "[yellow]Please check your LLM configuration and parameters",
+                    title="[white]LLM Configuration Error",
+                    border_style="red",
+                    width=80
+                )
+            )
             return
 
         chain = llm | StrOutputParser()
