@@ -47,15 +47,22 @@ def register_commands(cli_app: typer.Typer) -> None:
         if not input or len(input) < 5:
             print("Error: Input parameter or something in stdin is required")
             return
-        
+
         try:
             llm = LlmFactory(
-            llm_id=llm_id,
-            json_mode=False,
-            streaming=stream,
-            cache=cache,
-            llm_params={"temperature": temperature},
-        ).get()
+                llm_id=llm_id,
+                json_mode=False,
+                streaming=stream,
+                cache=cache,
+                llm_params={"temperature": temperature},
+            ).get()
+        except ValueError as e:
+            # nicer message, using rich, and without "    For further information visit https://errors.pydantic.dev/2.11/v/value_error" 
+            # AI!
+            print(f"Error: {str(e)}")
+            print("Please check your LLM configuration and parameters")
+            return
+
         chain = llm | StrOutputParser()
         if stream:
             for s in chain.stream(input):
@@ -64,9 +71,6 @@ def register_commands(cli_app: typer.Typer) -> None:
         else:
             result = chain.invoke(input)
             pprint(result)
-        except ValueError as e:
-            print(f"Error: {str(e)}")
-            print("Please check your LLM configuration and parameters")
 
     @cli_app.command()
     def run(
