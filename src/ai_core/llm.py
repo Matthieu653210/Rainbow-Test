@@ -43,6 +43,7 @@ from functools import cached_property, lru_cache
 from typing import Annotated, Any, cast
 
 import yaml
+from devtools import debug
 from dotenv import load_dotenv
 from langchain.chat_models import init_chat_model
 from langchain.chat_models.base import _SUPPORTED_PROVIDERS
@@ -235,6 +236,13 @@ class LlmFactory(BaseModel):
     def get_litellm_model_name(self) -> str:
         if self.provider in ["openai"]:
             result = f"{self.info.model}"
+        elif self.provider in ["azure"]:
+            name, _, api_version = self.info.model.partition("/")
+            os.environ["AZURE_API_VERSION"] = api_version
+            # Complete AZURE_API_BASE AI!
+            os.environ["AZURE_API_BASE"] = 
+            result = f"azure/{name}"
+            debug(result)
         else:
             result = f"{self.provider}/{self.info.model}"
 
