@@ -48,9 +48,8 @@ def register_commands(cli_app: typer.Typer) -> None:
             print("Error: Input parameter or something in stdin is required")
             return
         
-        # print a clear message in case of Velue Error exception AI!
-
-        llm = LlmFactory(
+        try:
+            llm = LlmFactory(
             llm_id=llm_id,
             json_mode=False,
             streaming=stream,
