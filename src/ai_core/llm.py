@@ -239,8 +239,7 @@ class LlmFactory(BaseModel):
         elif self.provider in ["azure"]:
             name, _, api_version = self.info.model.partition("/")
             os.environ["AZURE_API_VERSION"] = api_version
-            # Complete AZURE_API_BASE AI!
-            os.environ["AZURE_API_BASE"] = 
+            os.environ["AZURE_API_BASE"] = global_config().get_str("azure.api_base")
             result = f"azure/{name}"
             debug(result)
         else:
