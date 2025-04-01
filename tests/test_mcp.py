@@ -1,7 +1,15 @@
-#  Add module doc and docstrings AI!
+"""Tests for MCP (Multi-Component Platform) client functionality.
 
+This module contains unit tests for:
+- MCP server configuration parsing
+- Command alias handling
+- Agent runner functionality
 
-"""Tests for MCP client functionality."""
+The tests verify that:
+- Server configurations are correctly parsed from application config
+- Command aliases (like uvx) are properly converted
+- The agent runner correctly initializes and interacts with MCP tools
+"""
 
 import pytest
 from langchain_mcp_adapters.client import StdioServerParameters
