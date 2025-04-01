@@ -20,7 +20,7 @@ import re
 from typing import Optional
 
 import streamlit as st
-from rich import print as print
+from rich import print
 from smolagents.agent_types import AgentAudio, AgentImage, AgentText, handle_agent_output_types
 from smolagents.agents import ActionStep
 from smolagents.memory import MemoryStep

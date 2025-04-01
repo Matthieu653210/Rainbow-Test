@@ -5,7 +5,7 @@ Common code for Langgraph
 from typing import Any, AsyncIterator, Iterator
 
 from langchain_core.messages import AIMessage
-from rich import print as print
+from rich import print
 
 
 def stream_node_response_content(stream: Iterator, node: str = "agent") -> Iterator:

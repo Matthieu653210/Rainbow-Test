@@ -9,7 +9,7 @@ from pathlib import Path
 from dotenv import load_dotenv
 from fastapi import FastAPI
 from loguru import logger  # type: ignore
-from rich import print as print  # type: ignore  # noqa: F401
+from rich import print  # type: ignore  # noqa: F401
 
 # fmt: off
 [sys.path.append(str(path)) for path in [Path.cwd(), Path.cwd().parent, Path.cwd().parent/"python"] if str(path) not in sys.path]  # type: ignore # fmt: on
