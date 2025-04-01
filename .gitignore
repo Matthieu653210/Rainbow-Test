@@ -1,5 +1,6 @@
 # Project specific
 data/generated
+.env.example
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
