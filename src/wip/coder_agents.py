@@ -52,7 +52,7 @@ class DiagramGeneratorTool(BaseTool):
             Your goal is: {cmd}
             """
             prompt = dedent(prompt)
-            rprint(prompt, agent_executor)
+            print(prompt, agent_executor)
             result = agent_executor.run(prompt)
         else:
             result = "no know ST container"

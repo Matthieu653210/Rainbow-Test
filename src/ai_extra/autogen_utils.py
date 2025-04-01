@@ -13,7 +13,7 @@ def get_autogen_model_from_llm_id(llm_id: str, **kwargs) -> OpenAIChatCompletion
         llm_params=kwargs,
     )
     llm = factory.get()
-    rprint(isinstance(llm, ChatOpenAI))
+    print(isinstance(llm, ChatOpenAI))
     if isinstance(llm, ChatOpenAI):
         return OpenAIChatCompletionClient(
             model=llm.model_name,
@@ -42,6 +42,6 @@ def get_autogen_model_from_llm_id(llm_id: str, **kwargs) -> OpenAIChatCompletion
 if __name__ == "__main__":
     l = get_autogen_model_from_llm_id(llm_id="gpt_4o_openai")
     # l = get_autogen_model_from_llm_id(llm_id="llama33_70_groq")
-    l = get_autogen_model_from_llm_id(llm_id="deepseek_chatv3_openrouter")
-    l = get_autogen_model_from_llm_id(llm_id="llama32_3_ollama")
-    rprint(l)
+   # l = get_autogen_model_from_llm_id(llm_id="deepseek_chatv3_openrouter")
+    # l = get_autogen_model_from_llm_id(llm_id="llama32_3_ollama")
+    print(l)

@@ -54,6 +54,8 @@ from langchain_core.runnables import ConfigurableField, RunnableConfig, Runnable
 from litellm.litellm_core_utils.get_llm_provider_logic import get_llm_provider
 from loguru import logger
 from pydantic import BaseModel, Field, computed_field, field_validator
+from smolagents import AzureOpenAIServerModel, LiteLLMModel
+from smolagents.models import ApiModel
 
 from src.ai_core.cache import LlmCache
 from src.utils.config_mngr import global_config
@@ -236,12 +238,6 @@ class LlmFactory(BaseModel):
     def get_litellm_model_name(self) -> str:
         if self.provider in ["openai"]:
             result = f"{self.info.model}"
-        elif self.provider in ["azure"]:
-            name, _, api_version = self.info.model.partition("/")
-            os.environ["AZURE_API_VERSION"] = api_version
-            os.environ["AZURE_API_BASE"] = global_config().get_str("azure.api_base")
-            result = f"azure/{name}"
-            debug(result)
         else:
             result = f"{self.provider}/{self.info.model}"
 
@@ -253,6 +249,20 @@ class LlmFactory(BaseModel):
             raise ValueError(f"Incorrect or unknown LiteLLM provider for: '{result}'") from ex
 
         return result
+
+    def get_smolagent_model(self) -> ApiModel:
+        if self.provider in ["azure"]:
+            name, _, api_version = self.info.model.partition("/")
+            model = AzureOpenAIServerModel(
+                model_id=name,
+                azure_endpoint=os.environ.get("AZURE_OPENAI_ENDPOINT"),
+                api_key=os.environ.get("AZURE_OPENAI_API_KEY=your_azure_openai_key_here"),
+                api_version=api_version,
+            )
+        else:
+            model = LiteLLMModel(model_id=self.get_litellm_model_name(), **self.llm_params)
+        debug(model)
+        return model
 
     def get(self) -> BaseChatModel:
         """Create an LLM model.
@@ -318,6 +328,7 @@ class LlmFactory(BaseModel):
 
             provider, _, model = self.info.model.partition("/")
             _ = llm_params.pop("seed")
+            _ = llm_params.pop("json_object", None)
             _ = llm_params.pop("max_retries")
 
             llm = ChatEdenAI(
@@ -583,7 +594,7 @@ def get_print_chain(string: str = "") -> RunnableLambda:
     """
 
     def fn(input: Any, config: RunnableConfig) -> Any:
-        rprint(string, input, config)
+        print(string, input, config)
         return input
 
     return RunnableLambda(fn)

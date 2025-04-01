@@ -176,7 +176,7 @@ class EmbeddingsFactory(BaseModel):
         Returns:
             List of model identifiers
         """
-        return list(EmbeddingsFactory.known_items_dict().keys())
+        return sorted(EmbeddingsFactory.known_items_dict().keys())
 
     def get(self, cached: bool = False) -> Embeddings:
         """Create an embeddings model instance.
@@ -228,7 +228,9 @@ class EmbeddingsFactory(BaseModel):
             from langchain_community.embeddings.edenai import EdenAiEmbeddings
 
             provider, _, model = self.info.model.partition("/")
-            emb = EdenAiEmbeddings(model=model, provider=provider, edenai_api_key=None)
+            edenai_api_key = os.environ["EDENAI_API_KEY"]
+            emb = EdenAiEmbeddings(model=model, provider=provider, edenai_api_key=edenai_api_key)
+            print(emb, edenai_api_key)
         elif self.info.provider == "azure_openai":
             from langchain_openai import AzureOpenAIEmbeddings
 
@@ -294,5 +296,5 @@ def get_embeddings(
         encoding_str=encoding_str,
         retrieving_str=retrieving_str,
     )
-    logger.info(f"get logger: '{factory.embeddings_id}'")
+    logger.info(f"get embedder: '{factory.embeddings_id}'")
     return factory.get()

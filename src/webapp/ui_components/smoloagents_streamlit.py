@@ -20,7 +20,7 @@ import re
 from typing import Optional
 
 import streamlit as st
-from rich import print as rprint
+from rich import print as print
 from smolagents.agent_types import AgentAudio, AgentImage, AgentText, handle_agent_output_types
 from smolagents.agents import ActionStep
 from smolagents.memory import MemoryStep
@@ -106,7 +106,7 @@ def stream_to_streamlit(agent, task: str, reset_agent_memory: bool = False, addi
                     step_log.input_token_count = agent.model.last_input_token_count
                     step_log.output_token_count = agent.model.last_output_token_count
             except Exception as ex:
-                rprint(ex)
+                print(ex)
 
         display_step(step_log)
 

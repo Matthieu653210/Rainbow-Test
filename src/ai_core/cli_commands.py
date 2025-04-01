@@ -7,6 +7,8 @@ from devtools import pprint
 from langchain.globals import set_debug, set_verbose
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import Runnable
+
+# Import modules where runnables are registered
 from typer import Option
 
 from src.ai_core.cache import LlmCache
@@ -41,6 +43,12 @@ def register_commands(cli_app: typer.Typer) -> None:
         set_verbose(lc_verbose)
         LlmCache.set_method(cache)
 
+        if llm_id is not None:
+            if llm_id not in LlmFactory.known_items():
+                print(f"Error: {llm_id} is unknown llm_id.\nShould be in {LlmFactory.known_items()}")
+                return
+            global_config().set("llm.default_model", llm_id)
+
         # Check if executed as part ot a pipe
         if not input and not sys.stdin.isatty():
             input = sys.stdin.read()
@@ -48,31 +56,13 @@ def register_commands(cli_app: typer.Typer) -> None:
             print("Error: Input parameter or something in stdin is required")
             return
 
-        try:
-            llm = LlmFactory(
-                llm_id=llm_id,
-                json_mode=False,
-                streaming=stream,
-                cache=cache,
-                llm_params={"temperature": temperature},
-            ).get()
-        except ValueError as e:
-            from rich.console import Console
-            from rich.panel import Panel
-            
-            console = Console()
-            error_msg = str(e).split("\n")[0]  # Take only the first line of error
-            console.print(
-                Panel(
-                    f"[bold red]Error:[/] {error_msg}\n"
-                    "[yellow]Please check your LLM configuration and parameters",
-                    title="[white]LLM Configuration Error",
-                    border_style="red",
-                    width=80
-                )
-            )
-            return
-
+        llm = LlmFactory(
+            llm_id=llm_id or global_config().get_str("llm.default_model"),
+            json_mode=False,
+            streaming=stream,
+            cache=cache,
+            llm_params={"temperature": temperature},
+        ).get()
         chain = llm | StrOutputParser()
         if stream:
             for s in chain.stream(input):
@@ -116,7 +106,7 @@ def register_commands(cli_app: typer.Typer) -> None:
 
         # Handle input from stdin if no input parameter provided
         if not input and not sys.stdin.isatty():  # Check if stdin has data (pipe/redirect)
-            input = sys.stdin.read()
+            input = str(sys.stdin.read())
             if len(input.strip()) < 3:  # Ignore very short inputs
                 input = None
 

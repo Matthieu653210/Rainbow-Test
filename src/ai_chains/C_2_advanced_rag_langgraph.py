@@ -67,7 +67,7 @@ def retriever() -> BaseRetriever:
     )
     vectorstore = vs_factory.vector_store
 
-    rprint(vs_factory.document_count())
+    print(vs_factory.document_count())
     if vs_factory.document_count() == 0:
         logger.info("indexing documents...")
 
@@ -429,7 +429,7 @@ def test_graph() -> None:
     chain = query_graph({})
     input = {"question": "What are the types of agent memory?"}
     r = chain.invoke(input)
-    rprint(r)
+    print(r)
 
 
 def test_nodes() -> None:
@@ -437,19 +437,19 @@ def test_nodes() -> None:
     docs = retriever().invoke(question)
     assert len(docs) > 0
     doc_txt = docs[1].page_content
-    rprint(retrieval_grader().invoke({"question": question, "document": doc_txt}))
+    print(retrieval_grader().invoke({"question": question, "document": doc_txt}))
 
     # Run
     docs = retriever().invoke(question)
     generation = rag_chain().invoke({"context": docs, "question": question})
-    rprint(generation)
+    print(generation)
     ### Hallucination Grader
 
     hallucination = hallucination_grader().invoke({"documents": docs, "generation": generation})
-    rprint(hallucination)
+    print(hallucination)
 
     answer = answer_grader().invoke({"question": question, "generation": generation})
-    rprint(answer)
+    print(answer)
 
     question = "llm agent memory"
     docs = retriever().invoke(question)

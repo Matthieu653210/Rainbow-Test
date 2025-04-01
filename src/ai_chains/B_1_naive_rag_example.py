@@ -7,7 +7,7 @@ from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import RunnableConfig, RunnableLambda, RunnablePassthrough
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from loguru import logger
-from rich import print as rprint  # noqa: F401
+from rich import print as print  # noqa: F401
 
 from src.ai_core.chain_registry import Example, RunnableItem, register_runnable
 from src.ai_core.embeddings import EmbeddingsFactory

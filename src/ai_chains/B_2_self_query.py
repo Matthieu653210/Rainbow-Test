@@ -105,7 +105,7 @@ def get_query_constructor(config: dict):
 
 def get_retriever(config: dict):
     query_constructor = get_query_constructor(config)
-    #    rprint(query_constructor)
+    #    print(query_constructor)
     retriever = SelfQueryRetriever(
         query_constructor=query_constructor,  # TODO: Clarify # type: ignore
         llm_chain=query_constructor,
@@ -113,7 +113,7 @@ def get_retriever(config: dict):
         structured_query_translator=ChromaTranslator(),
         verbose=True,
     )
-    #    rprint(query_constructor, retriever)
+    #    print(query_constructor, retriever)
     return retriever
 
 
@@ -153,4 +153,4 @@ register_runnable(
 if __name__ == "__main__":
     llm = "gpt_35_openai"
     r = get_retriever(config={"llm": llm}).invoke("I want to watch a movie rated higher than 8.5")
-    rprint(r)
+    print(r)

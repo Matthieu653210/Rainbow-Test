@@ -126,6 +126,8 @@ llm:
       model: gpt-35-turbo/2023-05-15
     - id: gpt_4o_azure
       model: gpt-4o/2024-02-15-preview
+    - id: gpt_4omini_azure
+      model: gpt-4o-mini//2024-02-15-preview
 
 - provider: deepseek
   models:
@@ -141,7 +143,7 @@ llm:
 
 - provider: openrouter
   models:
-    - id: gpt_4omini_openrouter
+    - id: gpt_o1mini_openrouter
       model: openai/o1-mini-2024-09-12
     - id: claude_sonnet35_openrouter
       model: anthropic/claude-3.5-sonnet
@@ -197,37 +199,32 @@ embeddings:
 
 - provider: huggingface
   models:
-    - id: multilingual_MiniLM_local
+    - id: minilm_multilingual_local
       model: sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2
       key: 
 
-    - id: MiniLM_local
+    - id: minilm_v2_local
       model: sentence-transformers/all-MiniLM-L6-v2
 
     - id: camembert_large_local
       model: dangvantuan/sentence-camembert-large
       key:
       
-    - id: solon-large
+    - id: solon-solon_large_local
       model: OrdalieTech/Solon-embeddings-large-0.1
       key: 
 
-    - id: gte15_large  # https://huggingface.co/Alibaba-NLP/gte-large-en-v1.5
+    - id: gte15_large_local  # https://huggingface.co/Alibaba-NLP/gte-large-en-v1.5
       model: Alibaba-NLP/gte-large-en-v1.5
       key: 
 
-    - id: gte15_base  
+    - id: gte15_base_local  
       model: Alibaba-NLP/gte-base-en-v1.5
       key: 
 
-    - id: stella_400  # https://huggingface.co/dunzhang/stella_en_400M_v5
+    - id: stella_400_local  # https://huggingface.co/dunzhang/stella_en_400M_v5
       model: dunzhang/stella_en_400M_v5
       key: 
-
-    - id: ember_v1  # https://huggingface.co/llmrails/ember-v1
-      model: llmrails/ember-v1
-      key: 
-
 
 - provider: edenai
   models:

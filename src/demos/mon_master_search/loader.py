@@ -84,7 +84,7 @@ def process_json(source: str, formation: ParcoursFormations) -> Iterator[Documen
 
         desc.inm = dmn.for_inm
         info_pedago = dmn.informations_pedagogiques
-        # rprint(dmn.for_intitule, dmn.dom_libelle)
+        # print(dmn.for_intitule, dmn.dom_libelle)
         if info_pedago:
             desc.libeles.update(dmn.dom_libelle)
             desc.disciplines.update(info_pedago.mot_cle_disciplinaire or [])
@@ -155,9 +155,9 @@ REPO = Path("/mnt/c/Users/a184094/OneDrive - Eviden/_En cours/mon_master/")
 FILES = REPO / "synthesis_v2.json"
 
 
-EMBEDDINGS_MODEL = "multilingual_MiniLM_local"
+EMBEDDINGS_MODEL = "minilm_multilingual_local"
 EMBEDDINGS_MODEL = "camembert_large_local"
-EMBEDDINGS_MODEL = "solon-large"
+EMBEDDINGS_MODEL = "solon_large_local"
 
 
 @app.command()
@@ -199,7 +199,7 @@ def create_bm25_index(k: int = 20):
 def bm25_index_search(query: str, k: int = 20) -> None:
     retriever = create_bm25_index(k)
     r = retriever.invoke(query)
-    rprint(r)
+    print(r)
 
 
 @app.command()
@@ -240,7 +240,7 @@ def find_acronyms():
     docs = load_objects_from_jsonl(FILES)
     for doc in docs:
         candidates.update(re.findall(REGEXP_ACRONYMS, doc.page_content))
-        # rprint(candidates)
+        # print(candidates)
     for word in candidates:
         if not french_dict.check(word) and not english_dict.check(word):
             suggested = [unidecode(w).lower() for w in french_dict.suggest(word)]

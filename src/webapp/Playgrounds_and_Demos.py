@@ -51,7 +51,7 @@ def main() -> None:
 
     # corrct 'app' so its hold the name of the file AI!
 
-    # rprint(app)
+    # print(app)
     # cli.main_run([script_path])
 
     import subprocess

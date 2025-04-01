@@ -19,7 +19,7 @@ from src.utils.pydantic.jsonl_store import load_objects_from_jsonl
 
 DEFAULT_RESULT_COUNT = 20
 RATIO_SPARSE = 50
-EMBEDDINGS_MODEL_ID = "solon-large"
+EMBEDDINGS_MODEL_ID = "solon_large_local"
 REPO = Path("/mnt/c/Users/a184094/OneDrive - Eviden/_ongoing/mon_master/")
 FILES = REPO / "synthesis_v2.json"
 
@@ -37,7 +37,7 @@ def get_sparse_retriever(embeddings_model_id: str) -> Runnable:
         id="Chroma",
         embeddings_factory=embeddings_factory,
         collection_name="offres_formation",
-    ).set_number_of_doc_to_fetch(k=DEFAULT_RESULT_COUNT)
+    ).as_retriever_configurable(top_k=DEFAULT_RESULT_COUNT)
     return retriever
 
 
@@ -138,7 +138,7 @@ if __name__ == "__main__":
 
     logger.info(f"write Exel file : {OUT_FILE}")
     with pd.ExcelWriter(OUT_FILE) as writer:
-        logger.info("Vector Search (Solon-large)...")
+        logger.info("Vector Search (solon_large_local)...")
         d_vector = process_questions(EXAMPLE_QUERIES, SearchMode.VECTOR)
         pd.DataFrame(d_vector).to_excel(writer, sheet_name="Vector_search", freeze_panes=(0, 2))
         format_sheet(writer.sheets["Vector_search"])

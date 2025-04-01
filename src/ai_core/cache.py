@@ -61,7 +61,7 @@ class LlmCache:
         elif method == "no_cache":
             return None
         else:
-            rprint(value, method)
+            print(value, method)
             raise ValueError()
 
     @classmethod

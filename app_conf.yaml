@@ -31,7 +31,7 @@ baseline:
     
   embeddings:
     list: ${paths.project}/models_providers.yaml
-    default_model:  multilingual_MiniLM_local #ada_002_edenai #
+    default_model:  minilm_multilingual_local #ada_002_edenai #
     cache: ${paths.data_root}/hf_models
   vector_store:
     default: Chroma
@@ -145,7 +145,7 @@ training_edenai:
 
 training_azure:
   llm:
-    default_model: gpt_4o_azure
+    default_model: gpt_4omini_azure
   embeddings:
     default_model: ada_002_azure
 
@@ -155,4 +155,4 @@ training_openai:
   embeddings:
     default_model: ada_002_openai
 
-default_config: training_openai   # can be overidden by 'BLUEPRINT_CONFIG' environment variable
+default_config: training_edenai   # can be overidden by 'BLUEPRINT_CONFIG' environment variable

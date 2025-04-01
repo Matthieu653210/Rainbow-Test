@@ -168,12 +168,12 @@ def create_maintenance_tools() -> list[BaseTool]:
     @tool
     def get_sensor_values(sensor_name: list[str], start_time: str, end_time: str) -> str:
         """Useful to know the values of a given sensor during a time range."""
-        rprint(sensor_name, start_time, end_time)
+        print(sensor_name, start_time, end_time)
         ls = ",".join([f"'{n}'" for n in sensor_name])
         db = SQLDatabase.from_uri(dummy_database())
         sql = f"""SELECT date, sensor, value, unit FROM  sensor_data
                   WHERE  sensor IN ({ls}) and date >= '{start_time}' and date <= '{end_time}'"""
-        rprint(sql)
+        print(sql)
         result = db.run(sql)
         return str(result)
 

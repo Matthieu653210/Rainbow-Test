@@ -92,7 +92,7 @@ async def get_rcp_tool() -> list[BaseTool]:
 #     thread_id = str(uuid.uuid4())
 #     config = {"configurable": {"thread_id": thread_id}}
 #     all_tools = tools + rcp_tools
-#     # rprint(all_tools)
+#     # print(all_tools)
 #     agent = create_react_agent(
 #         model=llm, tools=all_tools, prompt=system_prompt_input or None, checkpointer=checkpointer
 #     )

@@ -5,7 +5,7 @@ Common code for Langgraph
 from typing import Any, AsyncIterator, Iterator
 
 from langchain_core.messages import AIMessage
-from rich import print as rprint
+from rich import print as print
 
 
 def stream_node_response_content(stream: Iterator, node: str = "agent") -> Iterator:
@@ -74,34 +74,34 @@ async def print_astream(stream: AsyncIterator, content: bool = True) -> None:
 def print_step(step: Any, details: bool = True) -> None:
     if isinstance(step, AIMessage):
         if details:
-            rprint(step.content)
+            print(step.content)
         else:
-            rprint("AI Message")
+            print("AI Message")
     elif isinstance(step, dict):
         for node, updates in step.items():
-            rprint(f"Update from: '{node}'")
+            print(f"Update from: '{node}'")
             if "messages" in updates:
                 updates["messages"][-1].pretty_print()
             else:
                 if details:
-                    rprint(updates)
+                    print(updates)
                 else:
-                    rprint(type(updates))
+                    print(type(updates))
 
     elif isinstance(step, tuple):
-        #        rprint(step)
+        #        print(step)
         step_type, content = step
-        rprint(f"step type: {step_type}")
+        print(f"step type: {step_type}")
         for node, updates in content.items():
-            rprint(f"Update from: {node}")
+            print(f"Update from: {node}")
             if "messages" in updates:
                 updates["messages"][-1].pretty_print()
             else:
                 if details:
-                    rprint(updates)
+                    print(updates)
                     # print(content)
                 else:
-                    rprint(type(updates).__name__)
+                    print(type(updates).__name__)
     else:
         print(str(step))
     print("\n")

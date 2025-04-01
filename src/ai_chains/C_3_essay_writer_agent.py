@@ -55,7 +55,7 @@ def plan_node(state: AgentState) -> AgentState:
 
     chain = def_prompt(system=PLAN_PROMPT, user=state["task"]) | llm | StrOutputParser()
     plan = chain.invoke({})
-    rprint(plan)
+    print(plan)
     return {"plan": plan}
 
 
@@ -73,7 +73,7 @@ def research_plan_node(state: AgentState):
         assert response
         for r in response["results"]:
             content.append(r["content"])
-    rprint(content)
+    print(content)
     return {"content": content}
 
 
@@ -97,7 +97,7 @@ def generation_node(state: AgentState) -> AgentState:
     )
 
     best_essay = chain.invoke({"content": content})
-    rprint(best_essay)
+    print(best_essay)
     return {
         "draft": best_essay,
         "revision_number": state.get("revision_number", 1) + 1,
@@ -200,7 +200,7 @@ def test() -> None:
         },
         thread,
     ):
-        rprint(s)
+        print(s)
 
 
 if __name__ == "__main__":
