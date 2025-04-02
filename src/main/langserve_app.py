@@ -3,23 +3,39 @@ Entry point for the REST API
 
 """
 
-import sys
-from pathlib import Path
-
 from dotenv import load_dotenv
 from fastapi import FastAPI
+from langchain_openai import ChatOpenAI
 from langserve import add_routes
 
-from src.ai_core.chain_registry import (
-    get_runnable_registry,
-    load_modules_with_chains,
-)
+from src.ai_core.chain_registry import ChainRegistry
 
-# fmt: off
-[sys.path.append(str(path)) for path in [Path.cwd(), Path.cwd().parent, Path.cwd().parent/"python"] if str(path) not in sys.path]  # type: ignore # fmt: on
+"""The usual "tell me a joke" LLM call."""
+
+from langchain_core.output_parsers import StrOutputParser
+from langchain_core.runnables import Runnable, RunnablePassthrough
+
+from src.ai_core.llm import get_llm
+from src.ai_core.prompts import def_prompt
 
 load_dotenv(verbose=True)
-load_modules_with_chains()
+
+
+def get_chain() -> Runnable:
+    simple_prompt = """Tell me a joke on {topic}"""
+    chain = (
+        {"input": RunnablePassthrough(), "root": RunnablePassthrough()}
+        | def_prompt(user=simple_prompt)
+        | get_llm()
+        | StrOutputParser()
+    )
+    return chain
+
+
+load_dotenv(verbose=True)
+
+chain_registry = ChainRegistry.instance()
+ChainRegistry.load_modules()
 
 app = FastAPI(
     title="LangChain Server",
@@ -28,15 +44,21 @@ app = FastAPI(
 )
 
 
+add_routes(app, {"input": RunnablePassthrough()} | def_prompt(user="tell ma a joke") | get_llm(), path="/joke")
 
-# test at : http://localhost:8000/joke/playground/
 
-for runnable in get_runnable_registry() :
-    add_routes(
-        app,
-        runnable.get(),
-        path="/" + runnable.name.lower()
-    )
+add_routes(
+    app,
+    ChatOpenAI(model="gpt-3.5-turbo-0125"),
+    path="/openai",
+)
+
+# for runnable in chain_registry.get_runnable_list() :
+#     add_routes(
+#         app,
+#         runnable.get(),
+#         path="/" + runnable.name.lower()
+#     )
 
 if __name__ == "__main__":
     import uvicorn

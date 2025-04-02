@@ -83,7 +83,7 @@ PROVIDER_INFO = {
     "groq": ("langchain_groq", "GROQ_API_KEY"),
     "ollama": ("langchain_ollama", ""),
     "edenai": ("langchain_community.chat_models.edenai", "EDENAI_API_KEY"),
-    "azure_openai": ("langchain_openai", "AZURE_OPENAI_API_KEY=your_azure_openai_key_here"),
+    "azure_openai": ("langchain_openai", "AZURE_OPENAI_API_KEY"),
     "together": ("langchain_together", "TOGETHER_API_KEY"),
     "deepseek": ("langchain_deepseek", "DEEPSEEK_API_KEY"),
     "openrouter": ("langchain_openai", "OPENROUTER_API_KEY"),

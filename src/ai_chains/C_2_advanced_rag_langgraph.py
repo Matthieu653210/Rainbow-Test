@@ -24,8 +24,8 @@ from src.ai_core.chain_registry import Example, RunnableItem, register_runnable
 from src.ai_core.embeddings import EmbeddingsFactory
 from src.ai_core.llm import get_llm
 from src.ai_core.prompts import def_prompt
-from src.ai_core.tools import basic_web_search
 from src.ai_core.vector_store import VectorStoreFactory
+from src.ai_extra.web_search_tool import basic_web_search
 
 """
 Suggested extensions :
@@ -35,7 +35,7 @@ Suggested extensions :
 
 load_dotenv(verbose=True)
 
-LLM_ID = "gpt_4omini_azure"
+LLM_ID = None
 
 
 class YesOrNo(Enum):

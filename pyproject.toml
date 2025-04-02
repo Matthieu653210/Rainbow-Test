@@ -15,6 +15,7 @@ dependencies = [
     "fastapi>=0.115.6",
     "rich[jupyter]>=13.9.4",
     "kuzu>=0.7.1",
+    "langserve>=0.3.1",
 ]
 
 [project.urls]

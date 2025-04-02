@@ -30,7 +30,7 @@ fast_api:  ## langsLauch FastAPI server localy
 	uvicorn $(FASTAPI_ENTRY_POINT) --reload
 
 langserve: ## Lauch langserve app
-	python python/langserve_app.py
+	python src/main/langserve_app.py
 
 webapp: ## Lauch Streamlit app
 	uv run streamlit run $(STREAMLIT_ENTRY_POINT)
