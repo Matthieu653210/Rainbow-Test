@@ -64,12 +64,12 @@ if path := first_example.path:
     uploaded_file = sel_col1.file_uploader(
         "Upload a text file",
         accept_multiple_files=False,
-        type=["*.txt"],
+        type=["txt"],
     )
     sel_col2.write("Or else use:")
     default_file_name = sel_col2.radio("", options=[first_example.path], index=None, horizontal=True)
     if uploaded_file:
-        path = Path(uploaded_file.name)
+        path = Path(str(uploaded_file))
 
 llm_id = global_config().get_str("llm.default_model")
 config = {}

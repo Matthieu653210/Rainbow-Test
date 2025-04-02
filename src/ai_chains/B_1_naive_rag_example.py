@@ -22,7 +22,7 @@ def get_retriever_fn(query: str | None, config: RunnableConfig):
         raise ValueError("Config should have a 'path' key")
     path = Path(path)
     if not path.exists():
-        raise FileNotFoundError(f"Path in config does not exists: {path}")
+        raise FileNotFoundError(f"Path in does not exists: {path}")
     vector_store = VectorStoreFactory(
         id=None,
         collection_name="test_rag",
