@@ -11,7 +11,7 @@ import streamlit as st
 from langchain.callbacks import tracing_v2_enabled
 
 from src.ai_core.llm import configurable
-from src.ai_extra.gpt_researcher_chain import GptrConfVariables, gpt_researcher_chain
+from src.ai_extra.gpt_researcher_chain import GptrConfVariables, ReportType, gpt_researcher_chain
 
 LOG_SIZE_MAX = 100
 
@@ -32,13 +32,16 @@ SAMPLE_SEARCH = [
     "What are the Agentic AI  solutions announced by AWS, Google, Microsoft, SalesForce, Service Now, UI Path, SAP, and other major software editors",
 ]
 
+# See https://docs.gptr.dev/docs/gpt-researcher/gptr/config 
+# 
 
 with st.expander(label="Search Configuration"):
     col1, col2, col3 = st.columns(3)
     col1.number_input("Max Interation", 1, 5, CUSTOM_GPTR_CONFIG["MAX_ITERATIONS"])
     col1.number_input("Max search per query", 1, 10, CUSTOM_GPTR_CONFIG["MAX_SEARCH_RESULTS_PER_QUERY"])
-    search_mode = col2.selectbox("Search Mode", ["Normal", "Agent", "Deep", "custom"])
-    col2.selectbox("Search Engine", ["Tavily", "DuckDuckGo"])
+    # select one of  ReportType  values AI!
+    search_mode = col2.selectbox("Search Mode", ReportType ....)
+    col2.selectbox("Search Engine", ["tavily", "duckduckgo", "serper", "google"])
     if search_mode == "custom":
         col3.text_area("System prompt:", height=150)
     st.write("Not Yet Implemented".upper())
