@@ -93,18 +93,48 @@ class GptrConfVariables(BaseModel):
         return str(path)
 
 
-# Replace literal by Enum AI!
+from enum import Enum
+
+class ReportType(str, Enum):
+    RESEARCH = "research_report"
+    DETAILED = "detailed_report"
+    OUTLINE = "outline_report"
+    CUSTOM = "custom_report"
+
+class Tone(str, Enum):
+    OBJECTIVE = "Objective"
+    ANALYTICAL = "Analytical"
+    INFORMATIVE = "Informative"
+    FORMAL = "Formal"
+    EXPLANATORY = "Explanatory"
+    DESCRIPTIVE = "Descriptive"
+
+class Retriever(str, Enum):
+    TAVILY = "tavily"
+    DUCKDUCKGO = "duckduckgo"
+    GOOGLE = "google"
+    BING = "bing"
+    ARXIV = "arxiv"
+    SERPAPI = "serpapi"
+    PUBMED = "pubmed_central"
+
+class Language(str, Enum):
+    ENGLISH = "english"
+    FRENCH = "french"
+    DUTCH = "dutch"
+    SPANISH = "spanish"
+    GERMAN = "german"
 
 class CommonConfigParams(BaseModel):
     """NOT USED YET."""
 
     # https://docs.gptr.dev/docs/gpt-researcher/gptr/config
 
-    report_type: Literal["research_report", "detailed_report", "outline_report", "custom_report"] = "research_report"
-    tone: Literal["Objective", "Analytical", "Informative", "Formal", "Explanatory", "Descriptive"] = "Objective"
-    retriever: set[Literal["tavily", "duckduckgo", "google", "bing", "arxiv", "serpapi", "pubmed_central"]] = {"tavily"}
+    report_type: ReportType = ReportType.RESEARCH
+    tone: Tone = Tone.OBJECTIVE
+    retriever: set[Retriever] = {Retriever.TAVILY}
     sources: list[str] = []
-    langage: Literal["english", "french", "dutch", "spanish", "german"] = "english"
+    langage: Language = Language.ENGLISH
     max_iteration: int = Field(gt=0, lt=5, default=4)
     max_search_result_per_query: int = Field(gt=0, lt=10, default=5)
     curate_sources: bool = True
