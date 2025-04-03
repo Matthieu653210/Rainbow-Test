@@ -93,6 +93,8 @@ class GptrConfVariables(BaseModel):
         return str(path)
 
 
+# Replace literal by Enum AI!
+
 class CommonConfigParams(BaseModel):
     """NOT USED YET."""
 
