@@ -39,8 +39,7 @@ with st.expander(label="Search Configuration"):
     col1, col2, col3 = st.columns(3)
     col1.number_input("Max Interation", 1, 5, CUSTOM_GPTR_CONFIG["MAX_ITERATIONS"])
     col1.number_input("Max search per query", 1, 10, CUSTOM_GPTR_CONFIG["MAX_SEARCH_RESULTS_PER_QUERY"])
-    # select one of  ReportType  values AI!
-    search_mode = col2.selectbox("Search Mode", ReportType ....)
+    search_mode = col2.selectbox("Search Mode", [rt.value for rt in ReportType])
     col2.selectbox("Search Engine", ["tavily", "duckduckgo", "serper", "google"])
     if search_mode == "custom":
         col3.text_area("System prompt:", height=150)
