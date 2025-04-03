@@ -15,7 +15,7 @@ from src.utils.streamlit.load_data import (
     TABULAR_FILE_FORMATS_READERS,
     load_tabular_data,
 )
-from src.webapp.Playgrounds_and_Demos import config_sidebar
+from src.webapp.ui_components.llm_config import llm_config_widget
 
 
 def clear_submit() -> None:
@@ -47,7 +47,7 @@ SAMPLE_PROMPTS = [
 
 title_col1, title_col2 = st.columns([2, 1])
 
-config_sidebar()
+llm_config_widget(st.sidebar, False)
 logo_eviden = str(Path.cwd() / "src/webapp/static/eviden-logo-white.png")
 
 title_col1.title("DataFrame Agent")

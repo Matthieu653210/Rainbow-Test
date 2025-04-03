@@ -29,11 +29,19 @@ st.title("GPT Researcher Playground")
 SAMPLE_SEARCH = [
     "What are the ethical issues with AI autonomous agents ? ",
     "What is the architecture of SmolAgents and how it compare with LangGraph ? ",
+    "What are the Agentic AI  solutions announced by AWS, Google, Microsoft, SalesForce, Service Now, UI Path, SAP, and other major software editors",
 ]
 
 
 with st.expander(label="Search Configuration"):
-    st.write("not yet implemented")
+    col1, col2, col3 = st.columns(3)
+    col1.number_input("Max Interation", 1, 5, CUSTOM_GPTR_CONFIG["MAX_ITERATIONS"])
+    col1.number_input("Max search per query", 1, 10, CUSTOM_GPTR_CONFIG["MAX_SEARCH_RESULTS_PER_QUERY"])
+    search_mode = col2.selectbox("Search Mode", ["Normal", "Agent", "Deep", "custom"])
+    col2.selectbox("Search Engine", ["Tavily", "DuckDuckGo"])
+    if search_mode == "custom":
+        col3.text_area("System prompt:", height=150)
+    st.write("Not Yet Implemented".upper())
     # import streamlit_pydantic as sp
 
     # data = sp.pydantic_form(key="Configuration", model=CommonConfigParams)
