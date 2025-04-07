@@ -1,7 +1,7 @@
 """Advanced RAG implementation using LangGraph's Functional API."""
 
+import sys
 from enum import Enum
-from typing import Any, Literal
 
 from dotenv import load_dotenv
 from langchain.output_parsers.enum import EnumOutputParser
@@ -9,14 +9,11 @@ from langchain.schema import Document
 from langchain_community.document_loaders.web_base import WebBaseLoader
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.retrievers import BaseRetriever
-from langchain_core.runnables import Runnable, RunnableLambda
+from langchain_core.runnables import RunnableLambda
 from langgraph.checkpoint.memory import MemorySaver
 from langgraph.func import entrypoint, task
-from langgraph.types import interrupt
 from loguru import logger
-from typing_extensions import TypedDict
 
-from src.ai_core.chain_registry import Example, RunnableItem, register_runnable
 from src.ai_core.embeddings import EmbeddingsFactory
 from src.ai_core.llm import get_llm
 from src.ai_core.prompts import def_prompt
@@ -25,18 +22,22 @@ from src.ai_extra.web_search_tool import basic_web_search
 
 load_dotenv(verbose=True)
 
-LLM_ID = None
+LLM_ID = "deepseek_chatv3_deepseek"
+
 
 class YesOrNo(Enum):
     YES = "yes"
     NO = "no"
 
+
 class DataRoute(Enum):
     WEB_SEARCH = "web_search"
     VECTOR_STORE = "vectorstore"
 
+
 yesno_enum_parser = EnumOutputParser(enum=YesOrNo)
 to_lower = RunnableLambda(lambda x: x.content.lower())
+
 
 @task
 def retriever() -> BaseRetriever:
@@ -62,6 +63,7 @@ def retriever() -> BaseRetriever:
         vectorstore.add_documents(doc_splits)
     return vectorstore.as_retriever()
 
+
 @task
 def retrieval_grader(question: str, document: str) -> YesOrNo:
     system_prompt = """
@@ -78,6 +80,7 @@ def retrieval_grader(question: str, document: str) -> YesOrNo:
     prompt = def_prompt(system_prompt, user_prompt).partial(instructions=yesno_enum_parser.get_format_instructions())
     return prompt | get_llm(llm_id=LLM_ID) | to_lower | yesno_enum_parser
 
+
 @task
 def rag_chain(question: str, context: list[Document]) -> str:
     system_prompt = """
@@ -90,6 +93,7 @@ def rag_chain(question: str, context: list[Document]) -> str:
         Answer: """
     prompt = def_prompt(system=system_prompt, user=user_prompt)
     return prompt | get_llm(llm_id=LLM_ID) | StrOutputParser()
+
 
 @task
 def hallucination_grader(documents: list[Document], generation: str) -> YesOrNo:
@@ -105,6 +109,7 @@ def hallucination_grader(documents: list[Document], generation: str) -> YesOrNo:
     prompt = def_prompt(system_prompt, user_prompt).partial(instructions=yesno_enum_parser.get_format_instructions())
     return prompt | get_llm(llm_id=LLM_ID) | to_lower | yesno_enum_parser
 
+
 @task
 def answer_grader(question: str, generation: str) -> YesOrNo:
     system_prompt = """
@@ -119,6 +124,7 @@ def answer_grader(question: str, generation: str) -> YesOrNo:
         """
     prompt = def_prompt(system_prompt, user_prompt).partial(instructions=yesno_enum_parser.get_format_instructions())
     return prompt | get_llm(llm_id=LLM_ID) | to_lower | yesno_enum_parser
+
 
 @task
 def question_router(question: str) -> DataRoute:
@@ -136,11 +142,12 @@ def question_router(question: str) -> DataRoute:
     prompt = def_prompt(system_prompt, user_prompt).partial(instructions=parser.get_format_instructions())
     return prompt | get_llm(llm_id=LLM_ID) | parser
 
+
 @entrypoint(checkpointer=MemorySaver())
 def advanced_rag_workflow(question: str) -> dict:
     # Route question to appropriate source
     route = question_router(question).result()
-    
+
     if route == DataRoute.WEB_SEARCH:
         documents = [Document(page_content=basic_web_search(question))]
     else:
@@ -150,7 +157,7 @@ def advanced_rag_workflow(question: str) -> dict:
         for doc in documents:
             if retrieval_grader(question, doc.page_content).result() == YesOrNo.YES:
                 filtered_docs.append(doc)
-        
+
         if not filtered_docs:
             documents = [Document(page_content=basic_web_search(question))]
         else:
@@ -158,37 +165,38 @@ def advanced_rag_workflow(question: str) -> dict:
 
     # Generate and grade answer
     generation = rag_chain(question, documents).result()
-    
+
     # Check if answer is grounded and useful
     if hallucination_grader(documents, generation).result() == YesOrNo.YES:
         if answer_grader(question, generation).result() == YesOrNo.YES:
             return {"answer": generation, "documents": documents}
-    
+
     # If answer is not satisfactory, try web search
     if route != DataRoute.WEB_SEARCH:
         documents = [Document(page_content=basic_web_search(question))]
         generation = rag_chain(question, documents).result()
         return {"answer": generation, "documents": documents}
-    
+
     return {"answer": "I couldn't find a satisfactory answer to your question.", "documents": documents}
 
-# Register the workflow
-register_runnable(
-    RunnableItem(
-        tag="Advanced RAG",
-        name="Advanced-RAG-Functional",
-        runnable=("question", advanced_rag_workflow),
-        examples=[
-            Example(
-                query=[
-                    "What are the types of agent memory",
-                    "Who are the Bears expected to draft first in the NFL draft?",
-                ]
-            )
-        ],
-        diagram="src/webapp/static/adaptative_rag_fallback.png",
-    )
-)
+
+# # Register the workflow
+# register_runnable(
+#     RunnableItem(
+#         tag="Advanced RAG",
+#         name="Advanced-RAG-Functional",
+#         runnable=("question", advanced_rag_workflow),
+#         examples=[
+#             Example(
+#                 query=[
+#                     "What are the types of agent memory",
+#                     "Who are the Bears expected to draft first in the NFL draft?",
+#                 ]
+#             )
+#         ],
+#         diagram="src/webapp/static/adaptative_rag_fallback.png",
+#     )
+# )
 
 if __name__ == "__main__":
     from langchain.globals import set_debug, set_verbose
@@ -203,5 +211,6 @@ if __name__ == "__main__":
     )
 
     # Test the workflow
-    result = advanced_rag_workflow.invoke("What are the types of agent memory?")
+    config = {"configurable": {"thread_id": "1"}}
+    result = advanced_rag_workflow.invoke("What are the types of agent memory?", config)
     print(result)
