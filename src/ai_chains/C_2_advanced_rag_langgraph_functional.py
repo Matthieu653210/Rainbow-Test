@@ -152,14 +152,14 @@ def advanced_rag_workflow(question: str) -> dict:
         documents = [Document(page_content=basic_web_search(question))]
     else:
         # Retrieve and grade documents
-        documents = retriever().invoke(question)
+        documents = retriever().result().invoke(question)
         filtered_docs = []
         for doc in documents:
             if retrieval_grader(question, doc.page_content).result() == YesOrNo.YES:
                 filtered_docs.append(doc)
 
         if not filtered_docs:
-            documents = [Document(page_content=basic_web_search(question))]
+            documents = [Document(page_content=basic_web_search(question).result())]
         else:
             documents = filtered_docs
 
