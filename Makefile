@@ -35,6 +35,7 @@ langserve: ## Lauch langserve app
 webapp: ## Lauch Streamlit app
 	uv run streamlit run $(STREAMLIT_ENTRY_POINT)
 
+
 ##############################
 ##  Development
 ##############################

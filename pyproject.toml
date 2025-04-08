@@ -16,6 +16,7 @@ dependencies = [
     "rich[jupyter]>=13.9.4",
     "kuzu>=0.7.1",
     "langserve>=0.3.1",
+    "streamlit-pydantic>=0.6.0",
 ]
 
 [project.urls]

@@ -16,8 +16,9 @@ import asyncio
 import json
 import tempfile
 import textwrap
+from enum import Enum
 from pathlib import Path
-from typing import Any, Literal
+from typing import Any
 
 try:
     from gpt_researcher import GPTResearcher
@@ -93,13 +94,13 @@ class GptrConfVariables(BaseModel):
         return str(path)
 
 
-from enum import Enum
-
 class ReportType(str, Enum):
     RESEARCH = "research_report"
     DETAILED = "detailed_report"
     OUTLINE = "outline_report"
     CUSTOM = "custom_report"
+    DEEP = "deep"
+
 
 class Tone(str, Enum):
     OBJECTIVE = "Objective"
@@ -109,7 +110,8 @@ class Tone(str, Enum):
     EXPLANATORY = "Explanatory"
     DESCRIPTIVE = "Descriptive"
 
-class Retriever(str, Enum):
+
+class SearchEngine(str, Enum):
     TAVILY = "tavily"
     DUCKDUCKGO = "duckduckgo"
     GOOGLE = "google"
@@ -118,6 +120,7 @@ class Retriever(str, Enum):
     SERPAPI = "serpapi"
     PUBMED = "pubmed_central"
 
+
 class Language(str, Enum):
     ENGLISH = "english"
     FRENCH = "french"
@@ -125,14 +128,15 @@ class Language(str, Enum):
     SPANISH = "spanish"
     GERMAN = "german"
 
+
 class CommonConfigParams(BaseModel):
-    """NOT USED YET."""
+
 
     # https://docs.gptr.dev/docs/gpt-researcher/gptr/config
 
     report_type: ReportType = ReportType.RESEARCH
     tone: Tone = Tone.OBJECTIVE
-    retriever: set[Retriever] = {Retriever.TAVILY}
+    retriever: set[SearchEngine] = {SearchEngine.TAVILY}
     sources: list[str] = []
     langage: Language = Language.ENGLISH
     max_iteration: int = Field(gt=0, lt=5, default=4)

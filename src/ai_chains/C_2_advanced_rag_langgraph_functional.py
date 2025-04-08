@@ -10,6 +10,7 @@ from langchain_community.document_loaders.web_base import WebBaseLoader
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.retrievers import BaseRetriever
 from langchain_core.runnables import RunnableLambda
+from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langgraph.checkpoint.memory import MemorySaver
 from langgraph.func import entrypoint, task
 from loguru import logger
@@ -19,6 +20,7 @@ from src.ai_core.llm import get_llm
 from src.ai_core.prompts import def_prompt
 from src.ai_core.vector_store import VectorStoreFactory
 from src.ai_extra.web_search_tool import basic_web_search
+from src.utils.singleton import once
 
 load_dotenv(verbose=True)
 
@@ -39,7 +41,7 @@ yesno_enum_parser = EnumOutputParser(enum=YesOrNo)
 to_lower = RunnableLambda(lambda x: x.content.lower())
 
 
-@task
+@once
 def retriever() -> BaseRetriever:
     urls = [
         "https://lilianweng.github.io/posts/2023-06-23-agent/",
@@ -58,10 +60,15 @@ def retriever() -> BaseRetriever:
         logger.info("indexing documents...")
         docs = [WebBaseLoader(url).load() for url in urls]
         docs_list = [item for sublist in docs for item in sublist]
-        text_splitter = RecursiveCharacterTextSplitter.from_tiktoken_encoder(chunk_size=250, chunk_overlap=0)
+        text_splitter = RecursiveCharacterTextSplitter(chunk_size=250, chunk_overlap=0)
         doc_splits = text_splitter.split_documents(docs_list)
         vectorstore.add_documents(doc_splits)
     return vectorstore.as_retriever()
+
+
+@task
+def retrieve_documents(question: str) -> list[Document]:
+    return retriever().invoke("question")
 
 
 @task
@@ -78,7 +85,8 @@ def retrieval_grader(question: str, document: str) -> YesOrNo:
         Here is the user question: {question} \n,
         Instructions: {instructions}"""
     prompt = def_prompt(system_prompt, user_prompt).partial(instructions=yesno_enum_parser.get_format_instructions())
-    return prompt | get_llm(llm_id=LLM_ID) | to_lower | yesno_enum_parser
+    chain = prompt | get_llm(llm_id=LLM_ID) | to_lower | yesno_enum_parser
+    return chain.invoke({"question": question, "document": document})
 
 
 @task
@@ -92,7 +100,8 @@ def rag_chain(question: str, context: list[Document]) -> str:
         Context: {context}
         Answer: """
     prompt = def_prompt(system=system_prompt, user=user_prompt)
-    return prompt | get_llm(llm_id=LLM_ID) | StrOutputParser()
+    chain = prompt | get_llm(llm_id=LLM_ID) | StrOutputParser()
+    return chain.invoke({"question": question, "context": context})
 
 
 @task
@@ -107,7 +116,8 @@ def hallucination_grader(documents: list[Document], generation: str) -> YesOrNo:
         Here is the answer: {generation} \n
         Instructions: {instructions} """
     prompt = def_prompt(system_prompt, user_prompt).partial(instructions=yesno_enum_parser.get_format_instructions())
-    return prompt | get_llm(llm_id=LLM_ID) | to_lower | yesno_enum_parser
+    chain = prompt | get_llm(llm_id=LLM_ID) | to_lower | yesno_enum_parser
+    return chain.invoke({"documents": documents, "generation": generation})
 
 
 @task
@@ -123,7 +133,8 @@ def answer_grader(question: str, generation: str) -> YesOrNo:
         Instructions: {instructions}
         """
     prompt = def_prompt(system_prompt, user_prompt).partial(instructions=yesno_enum_parser.get_format_instructions())
-    return prompt | get_llm(llm_id=LLM_ID) | to_lower | yesno_enum_parser
+    chain = prompt | get_llm(llm_id=LLM_ID) | to_lower | yesno_enum_parser
+    return chain.invoke({"question": question, "generation": generation})
 
 
 @task
@@ -140,7 +151,8 @@ def question_router(question: str) -> DataRoute:
         Question to route: {question} \n
         Instructions: {instructions} """
     prompt = def_prompt(system_prompt, user_prompt).partial(instructions=parser.get_format_instructions())
-    return prompt | get_llm(llm_id=LLM_ID) | parser
+    chain = prompt | get_llm(llm_id=LLM_ID) | parser
+    return chain.invoke({"question": question})
 
 
 @entrypoint(checkpointer=MemorySaver())
@@ -152,7 +164,7 @@ def advanced_rag_workflow(question: str) -> dict:
         documents = [Document(page_content=basic_web_search(question))]
     else:
         # Retrieve and grade documents
-        documents = retriever().result().invoke(question)
+        documents = retrieve_documents(question).result()
         filtered_docs = []
         for doc in documents:
             if retrieval_grader(question, doc.page_content).result() == YesOrNo.YES:

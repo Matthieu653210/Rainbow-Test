@@ -230,7 +230,6 @@ class EmbeddingsFactory(BaseModel):
             provider, _, model = self.info.model.partition("/")
             edenai_api_key = os.environ["EDENAI_API_KEY"]
             emb = EdenAiEmbeddings(model=model, provider=provider, edenai_api_key=edenai_api_key)
-            print(emb, edenai_api_key)
         elif self.info.provider == "azure_openai":
             from langchain_openai import AzureOpenAIEmbeddings
 
