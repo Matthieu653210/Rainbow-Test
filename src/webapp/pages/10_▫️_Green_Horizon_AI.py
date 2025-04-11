@@ -68,10 +68,10 @@ PRE_PROMPT = dedent_ws("""
     Write your final anwser using streamlit, ie by ending by 'st.write(...)\n'
     """)
 
-# Pass 'st' as local variable to the agent if ^possible AI!
 if prompt := st.chat_input("What would you like to ask SmolAgents?"):
     agent = CodeAgent(
         tools=[get_data_frame, DuckDuckGoSearchTool(), VisitWebpageTool()],
+        locals_dict={"st": st},
         model=llm,
         additional_authorized_imports=["pandas", "matplotlib.pyplot", "numpy", "json", "streamlit"],
     )
