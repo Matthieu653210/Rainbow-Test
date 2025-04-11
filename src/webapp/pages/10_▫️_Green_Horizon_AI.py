@@ -71,10 +71,10 @@ PRE_PROMPT = dedent_ws("""
 if prompt := st.chat_input("What would you like to ask SmolAgents?"):
     agent = CodeAgent(
         tools=[get_data_frame, DuckDuckGoSearchTool(), VisitWebpageTool()],
-        locals_dict={"st": st},
         model=llm,
         additional_authorized_imports=["pandas", "matplotlib.pyplot", "numpy", "json", "streamlit"],
     )
+    agent.locals.update({"st": st})
 
     with st.container(height=600):
         stream_to_streamlit(agent, PRE_PROMPT + prompt)
