@@ -1,6 +1,10 @@
-import pandas as pd
+"""Green Horizon AI Chat interface for analyzing CO2 emissions data.
 
-# import seaborn as sns
+Provides a Streamlit-based chat interface powered by SmolAgents to query and visualize
+CO2 emissions data. Includes tools for data retrieval, web search, and visualization.
+"""
+
+import pandas as pd
 import streamlit as st
 from smolagents import (
     CodeAgent,
@@ -28,6 +32,11 @@ SAMPLE_PROMPTS = [
 
 @st.cache_resource(show_spinner="Load data files")
 def get_data() -> pd.DataFrame:
+    """Load and cache CO2 emissions data from configured dataset.
+
+    Returns:
+        DataFrame containing emissions data by country and sector.
+    """
     data_file = global_config().get_path("datasets_root") / "carbon-monitor-data 1.xlsx"
     assert data_file.exists()
     if data_file.name.endswith(".csv"):
@@ -39,7 +48,11 @@ def get_data() -> pd.DataFrame:
 
 @tool
 def get_data_frame() -> pd.DataFrame:
-    """Return a data frame with data related to CO2 emissions per countries"""
+    """Get CO2 emissions data frame for agent tools.
+
+    Returns:
+        DataFrame with emissions data by country and sector.
+    """
     return get_data()
 
 
