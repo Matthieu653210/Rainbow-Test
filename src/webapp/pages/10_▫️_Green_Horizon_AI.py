@@ -74,7 +74,6 @@ if prompt := st.chat_input("What would you like to ask SmolAgents?"):
         model=llm,
         additional_authorized_imports=["pandas", "matplotlib.pyplot", "numpy", "json", "streamlit"],
     )
-    agent.locals.update({"st": st})
 
     with st.container(height=600):
-        stream_to_streamlit(agent, PRE_PROMPT + prompt)
+        stream_to_streamlit(agent, PRE_PROMPT + prompt, additional_locals={"st": st})
