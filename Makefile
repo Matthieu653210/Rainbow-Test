@@ -20,7 +20,18 @@ PROJECT_ID_GCP=XXX
 
 all: help 
 
+
+CURRENT_DIR := $(shell pwd)
+
 #cSpell: disable
+
+.PHONY: .uv   .pre-commit 
+.uv:  ## Check that uv is installed
+	@uv -V || echo 'Please install uv: https://docs.astral.sh/uv/getting-started/installation/'
+
+.pre-commit: .uv  ## Check that pre-commit is installed    see https://pre-commit.com/
+	@uv run pre-commit -V || uv pip install pre-commit
+
 
 ##############################
 ##  GenAI Blueprint related commands

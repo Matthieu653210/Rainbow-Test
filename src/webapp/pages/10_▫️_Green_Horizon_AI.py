@@ -76,4 +76,4 @@ if prompt := st.chat_input("What would you like to ask SmolAgents?"):
     )
 
     with st.container(height=600):
-        stream_to_streamlit(agent, PRE_PROMPT + prompt, additional_locals={"st": st})
+        stream_to_streamlit(agent, PRE_PROMPT + prompt, additional_args={"st": st})

@@ -173,7 +173,7 @@ class OmegaConfig(BaseModel):
                 raise ValueError(f"Missing required keys '{key}': {', '.join(missing_keys)}")
         return result
 
-    def get_path(self, key: str, create_dir_if_not_exists: bool = True) -> Path:
+    def get_path(self, key: str, create_dir_if_not_exists: bool = False) -> Path:
         """Get a file or dir path.
 
         Args:

@@ -155,4 +155,14 @@ training_openai:
   embeddings:
     default_model: ada_002_openai
 
-default_config: training_edenai   # can be overidden by 'BLUEPRINT_CONFIG' environment variable
+carbon_monitor_local:
+  llm:
+    default_model: gpt_4omini_openai
+  embeddings:
+    default_model: ada_002_openai  
+  
+  datasets_root: ${oc.env:HOME}/ln_to_onedrive/_ongoing/green_horizon
+
+  
+
+default_config: carbon_monitor_local   # can be overidden by 'BLUEPRINT_CONFIG' environment variable

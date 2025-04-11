@@ -24,8 +24,6 @@ SAMPLE_PROMPTS = [
     "Which Dutch player scored an open-play goal in the 2022 Netherlands vs Argentina game in the men’s FIFA World Cup?",
 ]
 
-SAMPLE_PROMPTS = ["What is the weather in San Francisco ? ", "What's it known for?"]
-
 
 st.title("SmolAgents Chat")
 st.logo(str(Path.cwd() / "src/webapp/static/eviden-logo-white.png"), size="large")
