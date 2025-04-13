@@ -6,7 +6,7 @@ def main():
     image_path = "/tmp/emissions_by_sector_france_2022.png"
     
     try:
-        st.image(image_path, caption="CO2 Emissions by Sector in France (2022)")
+        st.markdown(f"![CO2 Emissions by Sector in France (2022)]({image_path})")
     except FileNotFoundError:
         st.error(f"Image file not found: {image_path}")
 
