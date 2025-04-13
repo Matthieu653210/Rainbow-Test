@@ -236,6 +236,10 @@ class LlmFactory(BaseModel):
         return self.info.id.rsplit("_", maxsplit=1)[0]
 
     def get_litellm_model_name(self) -> str:
+        """Return the LiteLLM id string from our llm_id  (best effort).
+
+        Not all cases covered.
+        """
         if self.provider in ["openai"]:
             result = f"{self.info.model}"
         else:

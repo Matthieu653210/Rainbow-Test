@@ -66,10 +66,16 @@ with st.expander(label="Prompt examples", expanded=True):
     st.write(SAMPLE_PROMPTS)
 
 PRE_PROMPT = dedent_ws("""
-    Answer following question.
-    Write your final answer using streamlit, ie using 'st.write(...)' or equivalent.\n
-    End by printing the result on stdio, or the title if it's a diagram.
+    Answer following question. 
+    Use matplotlib to create plots. Use numpy for calculations.  Use sklearn to train ML models. 
+    Generate files (plot, diagrams) under temp directory.
+    Write outcomes in Markdown, using streamlit, ie using 'st.markdown(...)'.\n
+    When  displaying an image, call st.image  and st.markdown with the file path. 
+ 
+    Print also the outcome on stdio, or the title if it's a diagram.
     """)
+
+# When  displaying an image, call st.makdown with <img> tag and base64 encoded file.  Don't forget  unsafe_allow_html=True option.\n
 
 col1, col2 = st.columns(2)
 with col1:
@@ -77,7 +83,15 @@ with col1:
         agent = CodeAgent(
             tools=[get_data_frame, DuckDuckGoSearchTool(), VisitWebpageTool()],
             model=llm,
-            additional_authorized_imports=["pandas", "matplotlib.pyplot", "numpy", "json", "streamlit"],
+            additional_authorized_imports=[
+                "pandas",
+                "matplotlib.pyplot",
+                "numpy",
+                "json",
+                "streamlit",
+                "base64",
+                "tempfile",
+            ],
         )
 
         with st.container(height=600):

@@ -58,17 +58,16 @@ def display_step(step_log: MemoryStep) -> None:
                 content = content.strip()
                 if not content.startswith("```python"):
                     content = f"```python\n{content}\n```"
-
-            st.markdown(f"🛠️ Used tool {first_tool_call.name}")
-            st.markdown(content)
+            with st.expander(label=f"🛠️ Used tool: {first_tool_call.name}"):
+                st.markdown(content)
 
             # Display execution logs
             if hasattr(step_log, "observations") and step_log.observations and step_log.observations.strip():
                 log_content = step_log.observations.strip()
                 log_content = re.sub(r"^Execution logs:\s*", "", log_content)
                 if log_content:
-                    st.markdown("📝 Execution Logs")
-                    st.markdown(log_content)
+                    with st.expander("📝 Execution Logs"):
+                        st.write(log_content)
 
             # Display errors
             if hasattr(step_log, "error") and step_log.error is not None:
