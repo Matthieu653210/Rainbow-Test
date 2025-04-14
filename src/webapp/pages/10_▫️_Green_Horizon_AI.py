@@ -27,7 +27,11 @@ SAMPLE_PROMPTS = [
     "Generate a bar chart with emissions by sector for France in 2022",
     "Create a pie chart of emissions by sector",
     "Show the change in emissions from the industrial sector between 2022 and 2024",
+    "Create a simple UI with a multiselect widget and a text ",
+    "Train a ML model to predict the CO2 evolution of France in the next 2 years. Display the curve with historical and predicted data",
 ]
+
+#    "Create a UI to compare evolution of CO2 emisssions of countries (selected with a multiselect widget)",
 
 
 @st.cache_resource(show_spinner="Load data files")
@@ -65,17 +69,32 @@ llm = LiteLLMModel(model_id=model_name)
 with st.expander(label="Prompt examples", expanded=True):
     st.write(SAMPLE_PROMPTS)
 
-PRE_PROMPT = dedent_ws("""
-    Answer following question. 
-    Use matplotlib to create plots. Use numpy for calculations.  Use sklearn to train ML models. 
-    Generate files (plot, diagrams) under temp directory.
-    Write outcomes in Markdown, using streamlit, ie using 'st.markdown(...)'.\n
-    When  displaying an image, call st.image  and st.markdown with the file path. 
- 
-    Print also the outcome on stdio, or the title if it's a diagram.
+AUTHORIZED_IMPORTS = [
+    "pandas",
+    "matplotlib.pyplot",
+    "matplotlib",
+    "numpy",
+    "json",
+    "streamlit",
+    "base64",
+    "tempfile",
+    "sklearn",
+]
+PRE_PROMPT = dedent_ws(f"""
+    Answer following request. 
+    You can use the following package:  {", ".join(AUTHORIZED_IMPORTS)}
+    Instructions:
+    - Don't generate "if __name__ == "__main__"
+    - Don't use st.sidebar
+    - Generate files (plot, diagrams) under temp directory.
+    - Write outcomes in Markdown using 'st.markdown(...)'.\n
+    - When  displaying an image, call st.image  and st.markdown with the file path. 
+    - Print also the outcome on stdio, or the title if it's a diagram.\n
+    Request :
     """)
 
 # When  displaying an image, call st.makdown with <img> tag and base64 encoded file.  Don't forget  unsafe_allow_html=True option.\n
+
 
 col1, col2 = st.columns(2)
 with col1:
@@ -83,15 +102,7 @@ with col1:
         agent = CodeAgent(
             tools=[get_data_frame, DuckDuckGoSearchTool(), VisitWebpageTool()],
             model=llm,
-            additional_authorized_imports=[
-                "pandas",
-                "matplotlib.pyplot",
-                "numpy",
-                "json",
-                "streamlit",
-                "base64",
-                "tempfile",
-            ],
+            additional_authorized_imports=AUTHORIZED_IMPORTS,
         )
 
         with st.container(height=600):
