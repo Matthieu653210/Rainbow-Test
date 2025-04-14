@@ -206,7 +206,9 @@ def global_config() -> OmegaConfig:
 
 
 def config_loguru() -> None:
-    """Configure the logger."""
+    """
+    Configure the logger.
+    """
 
     LOGURU_FORMAT = "<cyan>{time:HH:mm:ss}</cyan>-<level>{level: <7}</level> | <magenta>{file.name}</magenta>:<green>{line} <italic>{function}</italic></green>- <level>{message}</level>"
     # Workaround "LOGURU_FORMAT" does not seems to be taken into account

@@ -26,8 +26,6 @@ DEFAULT_RESULT_COUNT = 100
 #  UI
 ################################
 
-st.set_page_config(layout="wide")
-
 title_col1, title_col2 = st.columns([2, 1])
 
 logo_eviden = str(Path.cwd() / "src/webapp/static/eviden-logo-white.png")

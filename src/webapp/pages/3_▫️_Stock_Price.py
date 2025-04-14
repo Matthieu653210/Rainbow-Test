@@ -14,11 +14,9 @@ from loguru import logger
 from src.ai_core.llm import get_llm
 from src.utils.config_mngr import global_config
 
-st.set_page_config(layout="wide")
-
 LLM_ID = None  # take default
 
-#LLM_ID = "llama33_70_groq"
+# LLM_ID = "llama33_70_groq"
 
 SAMPLE_SEARCH = [
     "What is the current price of Meta stock?",

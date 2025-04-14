@@ -11,6 +11,7 @@
 paths:
   project : ${oc.env:PWD}
   data_root : ${oc.env:HOME}
+  src: ${paths.project}/src
 
 #####
 # Default configuration (baseline)
@@ -113,16 +114,22 @@ baseline:
         command: uv
         args: 
           - run 
-          - ${paths.project}/src/mcp_server/math_server.py
+          - ${paths.src}/mcp_server/math_server.py
         disabled: true
       
     weather:
         command: uv
         args: 
           - run 
-          - ${paths.project}/src/mcp_server/weather_server.py
+          - ${paths.src}/mcp_server/weather_server.py
         disabled: false
 
+  #### 
+  # UI Configuration : list of Streamlit pages, ... 
+  ####    
+  ui:
+    app_name : GenAI Lab and Practicum
+    pages_dir : ${paths.src}/webapp/pages
 
 
 #### 
@@ -164,5 +171,4 @@ carbon_monitor_local:
   datasets_root: ${oc.env:HOME}/ln_to_onedrive/_ongoing/green_horizon
 
   
-
 default_config: carbon_monitor_local   # can be overidden by 'BLUEPRINT_CONFIG' environment variable

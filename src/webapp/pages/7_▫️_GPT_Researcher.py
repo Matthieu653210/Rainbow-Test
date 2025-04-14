@@ -31,6 +31,8 @@ CUSTOM_GPTR_CONFIG = {
 
 st.title("GPT Researcher Playground")
 
+with st.sidebar:
+    st.write("hello")
 
 SAMPLE_SEARCH = [
     "What are the ethical issues with AI autonomous agents ? ",

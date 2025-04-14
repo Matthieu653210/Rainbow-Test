@@ -10,8 +10,6 @@ from src.ai_core.llm import get_llm
 from src.webapp.ui_components.cypher_graph_display import get_cytoscape_json, get_cytoscape_style
 
 llm = get_llm(llm_id=None)
-
-st.set_page_config(page_title="Graph RAG with Kuzu", layout="wide")
 st.title("Graph RAG with Kuzu")
 
 # Initialize session state for graph data

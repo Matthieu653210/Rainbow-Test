@@ -8,7 +8,7 @@
 
 APP=genai-blueprint
 
-STREAMLIT_ENTRY_POINT="src/webapp/Playgrounds_and_Demos.py"
+STREAMLIT_ENTRY_POINT="src/main/streamlit.py"
 FASTAPI_ENTRY_POINT="src.main.fastapi_app:app"
 
 

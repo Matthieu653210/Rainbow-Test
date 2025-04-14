@@ -10,7 +10,6 @@ from ollama_ocr import OCRProcessor
 from PIL import Image
 
 # Page configuration
-st.set_page_config(page_title="OCR with Ollama", page_icon="🔍", layout="wide", initial_sidebar_state="expanded")
 
 # Custom CSS for better UI
 st.markdown(

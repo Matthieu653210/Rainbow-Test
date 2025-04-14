@@ -24,10 +24,6 @@ load_dotenv()
 
 llm_config_widget(st.sidebar, False)
 
-try:
-    st.set_page_config(layout="wide")
-except Exception:
-    pass
 st.title("Chat Playground")
 
 

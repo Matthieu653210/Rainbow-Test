@@ -26,7 +26,6 @@ def clear_submit() -> None:
     st.session_state["submit"] = False
 
 
-st.set_page_config(page_title="LangChain: Chat with pandas DataFrame", layout="wide", page_icon="🦜")
 
 
 @st.cache_data(show_spinner=True)
