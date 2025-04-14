@@ -12,6 +12,7 @@ os.environ["BLUEPRINT_CONFIG"] = "edc_local"
 
 st.set_page_config(
     page_title="GenAI Lab and Practicum",
+    
     page_icon="🛠️",
     layout="wide",
     initial_sidebar_state="expanded",
