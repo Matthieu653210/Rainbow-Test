@@ -40,9 +40,12 @@ config = global_config()
 #     unsafe_allow_html=True,
 # )
 
-# Sort the file by the number at the begining of their name (ex: for 'src/webapp/streamlit/14_▫️_Graph_RAG.py'  number is 14 )  AI!
 PAGES_DIR = Path(__file__).parent / "streamlit"
-pages_fn = sorted(PAGES_DIR.glob("*.py"))
+# Sort files by the number at the beginning of their name
+pages_fn = sorted(
+    PAGES_DIR.glob("*.py"),
+    key=lambda f: int(f.name.split("_")[0]) if f.name.split("_")[0].isdigit() else 0
+)
 pages = [st.Page(f.absolute()) for f in pages_fn if f.name != "__init__.py"]
 from devtools import debug
 
