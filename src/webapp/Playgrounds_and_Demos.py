@@ -43,9 +43,9 @@ title_col1.markdown(
 )
 
 
-def main() -> None:
-    # taken from https://blog.yericchen.com/python/installable-streamlit-app.html
-    # Does not work as expected
-    script_path = __file__
-    import subprocess
-    subprocess.run(["streamlit", "run", script_path])
+# def main() -> None:
+#     # taken from https://blog.yericchen.com/python/installable-streamlit-app.html
+#     # Does not work as expected
+#     script_path = __file__
+#     import subprocess
+#     subprocess.run(["streamlit", "run", script_path])
