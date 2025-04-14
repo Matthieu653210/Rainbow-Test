@@ -140,7 +140,7 @@ llm:
   models:
   - id: zephyr_7b_huggingface 
     model: "HuggingFaceH4/zephyr-7b-beta"
-
+#sort by model AI!
 - provider: openrouter
   models:
     - id: gpt_o1mini_openrouter
@@ -149,8 +149,8 @@ llm:
       model: anthropic/claude-3.5-sonnet
     - id: claude_haiku35_openrouter
       model: anthropic/claude-3-5-haiku
-    - id: qwen25_72_openrouter
-      model: qwen/qwen-2.5-72b-instruct
+    - id: qwen_qwq32_openrouter
+      model: qwen/qwq-32b
     - id: qwen25_coder32_openrouter
       model: qwen/qwen-2.5-coder-32b-instruct
     - id: liquid_lfm40_openrouter
