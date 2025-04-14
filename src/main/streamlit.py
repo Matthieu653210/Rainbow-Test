@@ -1,19 +1,22 @@
-# Add comments AI!
+# Main Streamlit application configuration and setup
 import streamlit as st
 from dotenv import load_dotenv
 from loguru import logger
-
 from src.utils.config_mngr import config_loguru, global_config
 
+# Load environment variables from .env file
 load_dotenv(verbose=True)
-config_loguru()
-logger.info("Start Webapp...")
 
+# Configure logging using Loguru
+config_loguru()
+logger.info("Starting Web Application...")
+
+# Configure Streamlit page settings
 st.set_page_config(
-    page_title=global_config().get_str("ui.app_name"),
-    page_icon="🛠️",
-    layout="wide",
-    initial_sidebar_state="expanded",
+    page_title=global_config().get_str("ui.app_name"),  # Get app name from config
+    page_icon="🛠️",  # Tool emoji as icon
+    layout="wide",  # Use wide layout
+    initial_sidebar_state="expanded",  # Start with sidebar expanded
 )
 
 
