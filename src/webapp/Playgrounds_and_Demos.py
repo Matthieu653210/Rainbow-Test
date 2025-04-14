@@ -48,6 +48,4 @@ def main() -> None:
     # Does not work as expected
     script_path = __file__
     import subprocess
-
-
     subprocess.run(["streamlit", "run", script_path])
