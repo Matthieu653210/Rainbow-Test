@@ -16,24 +16,30 @@ st.title("Graph RAG with Kuzu")
 if "graph" not in st.session_state:
     st.session_state.graph = None
 
+allowed_nodes = ["Person", "Company", "Location"]
+allowed_relationships = [
+    ("Person", "IS_CEO_OF", "Company"),
+    ("Company", "HAS_HEADQUARTERS_IN", "Location"),
+]
 # Form for text input and processing
 with st.form("graph_input_form"):
-    text = st.text_area(
+    col1, col2 = st.columns([2, 1])
+    text = col1.text_area(
         "Enter text to analyze:",
         value="Tim Cook is the CEO of Apple. Apple has its headquarters in California.",
         height=100,
     )
+    with col2.expander("Nodes:"):
+        st.write(allowed_nodes)
+    # pretty print allowed_relationships to looks like Cyper. Ex : Person - [IS_CEO_OF] -> Company AI!
+    with col2.expander("Allowed Relationships:"):
+        st.write(allowed_relationships)
     use_cache = st.checkbox("Cache built graph", value=True)
     submitted = st.form_submit_button("Process Text")
 
 DB = "test_db"
 if submitted:
     # Define schema
-    allowed_nodes = ["Person", "Company", "Location"]
-    allowed_relationships = [
-        ("Person", "IS_CEO_OF", "Company"),
-        ("Company", "HAS_HEADQUARTERS_IN", "Location"),
-    ]
 
     llm_transformer = LLMGraphTransformer(
         llm=llm,
