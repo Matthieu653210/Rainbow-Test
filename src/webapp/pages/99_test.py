@@ -1,72 +1,69 @@
-import tempfile
-
-import matplotlib.pyplot as plt
-import pandas as pd
-import streamlit as st
-
-from src.utils.config_mngr import global_config
+from streamlit_extras.sandbox import sandbox
 
 
-def get_data() -> pd.DataFrame:
-    """Load and cache CO2 emissions data from configured dataset.
+def follium_ex():
+    def embedded_app():
+        import json
 
-    Returns:
-        DataFrame containing emissions data by country and sector.
-    """
-    data_file = global_config().get_path("datasets_root") / "carbon-monitor-data 1.xlsx"
-    assert data_file.exists()
-    if data_file.name.endswith(".csv"):
-        df = pd.read_csv(data_file, decimal=",")
-    else:
-        df = pd.read_excel(data_file)
-    return df
+        import folium
+        import pandas as pd
+        from pyodide.http import open_url
+
+        url = "https://raw.githubusercontent.com/python-visualization/folium/master/examples/data"
+        state_geo = f"{url}/us-states.json"
+        state_unemployment = f"{url}/US_Unemployment_Oct2012.csv"
+        state_data = pd.read_csv(open_url(state_unemployment))
+        geo_json = json.loads(open_url(state_geo).read())
+
+        m = folium.Map(location=[48, -102], zoom_start=3)
+
+        folium.Choropleth(
+            geo_data=geo_json,
+            name="choropleth",
+            data=state_data,
+            columns=["State", "Unemployment"],
+            key_on="feature.id",
+            fill_color="YlGn",
+            fill_opacity=0.7,
+            line_opacity=0.2,
+            legend_name="Unemployment Rate (%)",
+        ).add_to(m)
+
+        folium.LayerControl().add_to(m)
+
+        #Complete to maje the folium map displayed AI! 
+        return ...
+
+        # display(m, target="folium")
+
+    sandbox(embedded_app, requirements=["folium"])
 
 
-df = get_data()
-# Inspect the DataFrame structure
-print("DataFrame columns:", df.columns)
+def example1():
+    def embedded_app():
+        import numpy as np
+        import pandas as pd
+        import plotly.express as px
+        import streamlit as st
 
-# Check the first few rows of the DataFrame
-print("First few rows of the DataFrame:")
-print(df.head())
+        @st.cache_data
+        def get_data():
+            dates = pd.date_range(start="01-01-2020", end="01-01-2023")
+            data = np.random.randn(len(dates), 1).cumsum(axis=0)
+            return pd.DataFrame(data, index=dates, columns=["Value"])
 
-# Convert the 'date' column to datetime, handling mixed formats
-df["date"] = pd.to_datetime(df["date"], dayfirst=True)
+        data = get_data()
 
-# Extract the year from the date column
-df["Year"] = df["date"].dt.year
+        value = st.slider(
+            "Select a range of values",
+            int(data.min()),
+            int(data.max()),
+            (int(data.min()), int(data.max())),
+        )
+        filtered_data = data[(data["Value"] >= value[0]) & (data["Value"] <= value[1])]
+        st.plotly_chart(px.line(filtered_data, y="Value"))
 
-# Group the data by Year and country, summing only the numeric column ('MtCO2 per day')
-grouped_df = df.groupby(["Year", "country"])["MtCO2 per day"].sum().reset_index()
+    sandbox(embedded_app)
 
-# Create a multiselect widget for selecting countries
-selected_countries = st.sidebar.multiselect("Select countries to compare", grouped_df["country"].unique())
 
-if selected_countries:
-    # Filter the data based on selected countries
-    filtered_df = grouped_df[grouped_df["country"].isin(selected_countries)]
-
-    # Plot the CO2 emissions over time
-    plt.figure(figsize=(10, 6))
-    for country in selected_countries:
-        country_data = filtered_df[filtered_df["country"] == country]
-        plt.plot(country_data["Year"], country_data["MtCO2 per day"], label=country)
-
-    plt.title("Evolution of CO2 Emissions")
-    plt.xlabel("Year")
-    plt.ylabel("CO2 Emissions (MtCO2 per day)")
-    plt.legend()
-
-    # Save the plot to a temporary file
-    with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as tmpfile:
-        plt.savefig(tmpfile.name)
-        plot_path = tmpfile.name
-
-    # Display the plot in the UI
-    st.image(plot_path, use_column_width=True)
-    st.markdown(f"![Evolution of CO2 Emissions]({plot_path})")
-
-    # Print the title of the plot to stdio
-    print("Evolution of CO2 Emissions")
-else:
-    st.markdown("Please select at least one country to compare.")
+follium_ex()
