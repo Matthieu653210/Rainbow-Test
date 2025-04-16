@@ -31,9 +31,9 @@ with st.form("graph_input_form"):
     )
     with col2.expander("Nodes:"):
         st.write(allowed_nodes)
-    # pretty print allowed_relationships to looks like Cyper. Ex : Person - [IS_CEO_OF] -> Company AI!
     with col2.expander("Allowed Relationships:"):
-        st.write(allowed_relationships)
+        for src, rel, dst in allowed_relationships:
+            st.code(f"{src} -[{rel}]-> {dst}")
     use_cache = st.checkbox("Cache built graph", value=True)
     submitted = st.form_submit_button("Process Text")
 
