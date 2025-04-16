@@ -2,13 +2,16 @@ from streamlit_extras.sandbox import sandbox
 
 
 def follium_ex():
-    st.header("US Unemployment Map")
     def embedded_app():
         import json
 
         import folium
         import pandas as pd
+        import streamlit as st
         from pyodide.http import open_url
+        from streamlit_folium import st_folium
+
+        st.write("Hello")
 
         url = "https://raw.githubusercontent.com/python-visualization/folium/master/examples/data"
         state_geo = f"{url}/us-states.json"
@@ -31,14 +34,14 @@ def follium_ex():
         ).add_to(m)
 
         folium.LayerControl().add_to(m)
-        
+
         # Get the HTML representation of the map
         map_html = m._repr_html_()
         # Display the map HTML directly in the sandbox
-        from IPython.display import HTML
-        return HTML(map_html)
 
-    sandbox(embedded_app, requirements=["folium", "ipython"])
+        st_folium(m)
+
+    sandbox(embedded_app, requirements=["folium", "ipython", "streamlit_folium"])
 
 
 def example1():

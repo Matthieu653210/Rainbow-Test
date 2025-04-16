@@ -90,6 +90,7 @@
         "pygraphviz",
         "Pylance",
         "pytest",
+        "qwen",
         "rprint",
         "selectbox",
         "Smol",

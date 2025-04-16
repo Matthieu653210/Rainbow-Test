@@ -17,8 +17,9 @@ dependencies = [
     "kuzu>=0.7.1",
     "langserve>=0.3.1",
     "streamlit-pydantic>=0.6.0",
-    "openpyxl>=3.1.5",
-    "scikit-learn>=1.6.1",
+    "smolagents[gradio]>=1.13.0",
+    "streamlit-folium>=0.24.1",
+    "streamlit-extras>=0.6.0",
 ]
 
 [project.urls]
@@ -46,7 +47,6 @@ ai = [
     "langchainhub>=0.1",
     "litellm>=1",
     "chromadb>=0.6",
-
 ]
 ui = [
     "uvicorn>=0.34.0",
@@ -62,6 +62,7 @@ ai_extra = [
     "tavily-python>=0.3.3",
     "duckduckgo-search>=6.1.6",
     "mcp[cli]>=1.4.1",
+    "openpyxl>=3.1.5",
 ]
 demos = [
     "bs4>=0.0.2",
@@ -76,10 +77,11 @@ demos = [
     "enchant>=0.0.1,<0.0.2",
     "pypdf>=5.1.0,<6",
     "giskard>=2.15.5",
-    "ollama-ocr>=0.1.3,<0.2",
+#   "ollama-ocr>=0.1.3,<0.2",
     "langchain-kuzu>=0.3.0",
     "playwright>=1.49.1",
     "helium>=5.1.0,<6",
+    "scikit-learn>=1.6.1",
 ]
 autogen = [
     "autogen-openaiext-client>=0.0.3",
