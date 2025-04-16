@@ -30,11 +30,9 @@ def follium_ex():
         ).add_to(m)
 
         folium.LayerControl().add_to(m)
-
-        #Complete to maje the folium map displayed AI! 
-        return ...
-
-        # display(m, target="folium")
+        
+        # Convert the Folium map to HTML and return it
+        return m._repr_html_()
 
     sandbox(embedded_app, requirements=["folium"])
 
