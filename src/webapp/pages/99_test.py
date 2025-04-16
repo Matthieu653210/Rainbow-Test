@@ -2,6 +2,7 @@ from streamlit_extras.sandbox import sandbox
 
 
 def follium_ex():
+    st.header("US Unemployment Map")
     def embedded_app():
         import json
 
@@ -31,10 +32,13 @@ def follium_ex():
 
         folium.LayerControl().add_to(m)
         
-        # Convert the Folium map to HTML and return it
-        return m._repr_html_()
+        # Get the HTML representation of the map
+        map_html = m._repr_html_()
+        # Display the map HTML directly in the sandbox
+        from IPython.display import HTML
+        return HTML(map_html)
 
-    sandbox(embedded_app, requirements=["folium"])
+    sandbox(embedded_app, requirements=["folium", "ipython"])
 
 
 def example1():
