@@ -11,6 +11,7 @@ st.title("🌍 Folium Map State Demo")
 # Initialize session state
 if "map_state" not in st.session_state:
     st.session_state.map_state = None
+if "saved_state" not in st.session_state:
     st.session_state.saved_state = None
 
 # Create initial map
