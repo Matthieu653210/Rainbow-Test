@@ -43,7 +43,7 @@ with col1:
         # Create map with save capability
         m = create_map()
         Draw(export=True).add_to(m)
-        folium_static(m, height=500, key="map")
+        folium_static(m, height=500)
         st.session_state.map_state = save_js
         st.success("Map state saved!")
 
@@ -53,7 +53,7 @@ with col2:
         state = st.session_state.saved_state
         m = create_map(center=state['center'], zoom=state['zoom'])
         Draw(export=True).add_to(m)
-        folium_static(m, height=500, key="map")
+        folium_static(m, height=500)
         st.success("Map state restored!")
 
 with col3:
@@ -61,7 +61,7 @@ with col3:
         # Reset to initial state
         m = create_map()
         Draw(export=True).add_to(m)
-        folium_static(m, height=500, key="map")
+        folium_static(m, height=500)
         st.session_state.map_state = None
         st.session_state.saved_state = None
         st.success("Map reset to initial state!")
@@ -73,7 +73,7 @@ if st.session_state.saved_state:
 else:
     m = create_map()
 Draw(export=True).add_to(m)
-folium_static(m, height=500, key="map")
+folium_static(m, height=500)
 
 # Add JavaScript for state handling
 st.markdown(
