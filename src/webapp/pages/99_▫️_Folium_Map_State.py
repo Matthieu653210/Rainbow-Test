@@ -1,5 +1,6 @@
 """Demonstrate saving and restoring Folium map state using streamlit_folium."""
 
+import json
 import folium
 import streamlit as st
 from folium.plugins import Draw
@@ -13,6 +14,8 @@ if "map_state" not in st.session_state:
     st.session_state.map_state = None
 if "saved_state" not in st.session_state:
     st.session_state.saved_state = None
+if "component_value" not in st.session_state:
+    st.session_state.component_value = None
 
 # Create initial map
 def create_map(center=None, zoom=None):
@@ -27,25 +30,35 @@ map_container = st.container()
 col1, col2, col3 = st.columns(3)
 with col1:
     if st.button("💾 Save Map State"):
-        # JavaScript to get current map state
-        save_js = """
-        const center = map.getCenter();
-        const zoom = map.getZoom();
-        const layers = [];
-        map.eachLayer(layer => {
-            if (layer instanceof L.TileLayer || layer instanceof L.Marker) {
-                layers.push(layer.toGeoJSON());
-            }
-        });
-        const state = { center: [center.lat, center.lng], zoom, layers };
-        parent.window.postMessage({type: 'mapState', data: state}, '*');
-        """
         # Create map with save capability
         m = create_map()
         Draw(export=True).add_to(m)
+        
+        # JavaScript to get current map state
+        save_js = """
+        <script>
+        function saveMapState() {
+            const center = map.getCenter();
+            const zoom = map.getZoom();
+            const state = { center: [center.lat, center.lng], zoom };
+            parent.window.streamlitAPI.setComponentValue(JSON.stringify(state));
+        }
+        // Save state when button is clicked
+        saveMapState();
+        </script>
+        """
+        
+        # Render map and JavaScript
         folium_static(m, height=500)
-        st.session_state.map_state = save_js
-        st.success("Map state saved!")
+        st.components.v1.html(save_js, height=0)
+        
+        # Get the state from Streamlit's component value
+        state = st.session_state.get('component_value')
+        if state:
+            st.session_state.saved_state = json.loads(state)
+            st.success("Map state saved!")
+        else:
+            st.error("Failed to save map state")
 
 with col2:
     if st.button("🔄 Restore Map State") and st.session_state.saved_state:
