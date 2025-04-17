@@ -13,10 +13,7 @@ st.title("🌍 Folium Map State Demo")
 if "saved_state" not in st.session_state:
     st.session_state.saved_state = None
 if "component_value" not in st.session_state:
-    st.session_state.component_value = json.dumps({
-        'center': [45.5236, -122.6750],
-        'zoom': 13
-    })
+    st.session_state.component_value = None
 
 # Create initial map
 def create_map(center=None, zoom=None):
@@ -65,8 +62,14 @@ with col1:
         
         # Save the state and handle the response
         save_map_state()
-        st.session_state.saved_state = json.loads(st.session_state.component_value)
-        st.success("Map state saved!")
+        if st.session_state.component_value:
+            try:
+                st.session_state.saved_state = json.loads(st.session_state.component_value)
+                st.success("Map state saved!")
+            except json.JSONDecodeError:
+                st.error("Failed to parse map state")
+        else:
+            st.error("Failed to save map state")
 
 with col2:
     if st.button("🔄 Restore Map State") and st.session_state.saved_state:
@@ -100,5 +103,5 @@ folium_static(m, height=500)
 if st.session_state.component_value:
     try:
         st.session_state.saved_state = json.loads(st.session_state.component_value)
-    except:
+    except json.JSONDecodeError:
         st.session_state.saved_state = None
