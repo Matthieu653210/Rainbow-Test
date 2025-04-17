@@ -1,22 +1,23 @@
 """Demonstrate saving and restoring Folium map state using streamlit_folium."""
 
-import streamlit as st
-from streamlit_folium import folium_static
 import folium
+import streamlit as st
 from folium.plugins import Draw
-import json
+from streamlit_folium import folium_static
 
 # Page config
-st.set_page_config(page_title="Folium Map State", layout="wide")
+#st.set_page_config(page_title="Folium Map State", layout="wide")
 st.title("🌍 Folium Map State Demo")
 
 # Initialize session state
 if "map_state" not in st.session_state:
     st.session_state.map_state = None
 
+
 # Create initial map
 def create_map():
     return folium.Map(location=[45.5236, -122.6750], zoom_start=13)
+
 
 # Main map container
 map_container = st.container()
@@ -75,7 +76,8 @@ else:
     folium_static(m, height=500)
 
 # Add JavaScript for state handling
-st.markdown("""
+st.markdown(
+    """
 <script>
 // Listen for map state messages
 window.addEventListener('message', function(event) {
@@ -85,4 +87,6 @@ window.addEventListener('message', function(event) {
     }
 });
 </script>
-""", unsafe_allow_html=True)
+""",
+    unsafe_allow_html=True,
+)
