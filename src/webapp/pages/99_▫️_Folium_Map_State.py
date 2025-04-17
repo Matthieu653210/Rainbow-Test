@@ -10,12 +10,13 @@ from streamlit_folium import folium_static
 st.title("🌍 Folium Map State Demo")
 
 # Initialize session state
-if "map_state" not in st.session_state:
-    st.session_state.map_state = None
 if "saved_state" not in st.session_state:
     st.session_state.saved_state = None
 if "component_value" not in st.session_state:
-    st.session_state.component_value = None
+    st.session_state.component_value = json.dumps({
+        'center': [45.5236, -122.6750],
+        'zoom': 13
+    })
 
 # Create initial map
 def create_map(center=None, zoom=None):
@@ -34,31 +35,38 @@ with col1:
         m = create_map()
         Draw(export=True).add_to(m)
         
-        # JavaScript to get current map state
-        save_js = """
-        <script>
-        function saveMapState() {
-            const center = map.getCenter();
-            const zoom = map.getZoom();
-            const state = { center: [center.lat, center.lng], zoom };
-            parent.window.streamlitAPI.setComponentValue(JSON.stringify(state));
-        }
-        // Save state when button is clicked
-        saveMapState();
-        </script>
-        """
+        # Create a component to capture the map state
+        def save_map_state():
+            return st.components.v1.html(
+                """
+                <script>
+                function saveMapState() {
+                    const center = map.getCenter();
+                    const zoom = map.getZoom();
+                    const state = { 
+                        center: [center.lat, center.lng], 
+                        zoom: zoom 
+                    };
+                    window.parent.postMessage({
+                        type: 'streamlit:setComponentValue',
+                        value: JSON.stringify(state)
+                    }, '*');
+                    return false;
+                }
+                // Save state when the function is called
+                saveMapState();
+                </script>
+                """,
+                height=0
+            )
         
-        # Render map and JavaScript
+        # Render the map
         folium_static(m, height=500)
-        st.components.v1.html(save_js, height=0)
         
-        # Get the state from Streamlit's component value
-        state = st.session_state.get('component_value')
-        if state:
-            st.session_state.saved_state = json.loads(state)
-            st.success("Map state saved!")
-        else:
-            st.error("Failed to save map state")
+        # Save the state and handle the response
+        save_map_state()
+        st.session_state.saved_state = json.loads(st.session_state.component_value)
+        st.success("Map state saved!")
 
 with col2:
     if st.button("🔄 Restore Map State") and st.session_state.saved_state:
@@ -88,43 +96,9 @@ else:
 Draw(export=True).add_to(m)
 folium_static(m, height=500)
 
-# Add JavaScript for state handling
-st.markdown(
-    """
-<script>
-// Listen for map state messages
-window.addEventListener('message', function(event) {
-    if (event.data.type === 'mapState') {
-        // Store state in Streamlit session
-        parent.window.streamlitAPI.setComponentValue(JSON.stringify(event.data.data));
-    }
-});
-
-// Handle the map state from Streamlit
-function handleMapState(state) {
-    if (state) {
-        const { center, zoom } = state;
-        map.setView(center, zoom);
-    }
-}
-
-// Get the initial state from Streamlit
-const initialState = parent.window.streamlitAPI.getComponentValue();
-if (initialState) {
-    handleMapState(JSON.parse(initialState));
-}
-</script>
-""",
-    unsafe_allow_html=True,
-)
-
 # Handle the saved state from JavaScript
-if st.session_state.map_state:
+if st.session_state.component_value:
     try:
-        state = json.loads(st.session_state.map_state)
-        st.session_state.saved_state = {
-            'center': state['center'],
-            'zoom': state['zoom']
-        }
+        st.session_state.saved_state = json.loads(st.session_state.component_value)
     except:
-        pass
+        st.session_state.saved_state = None
