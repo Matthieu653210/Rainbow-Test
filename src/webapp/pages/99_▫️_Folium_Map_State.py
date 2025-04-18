@@ -27,8 +27,11 @@ def main():
     # Create the map
     m = create_toulouse_map()
 
-    # Display the map using Streamlit's components API with proper height
-    st.components.v1.html(m._repr_html_(), height=500)
+    # Complete code to display the map as HTML (using Folium.Map.save()) inside a st.markdown() and st.HTML()  AI!
+
+
+
+
 
 
 main()
