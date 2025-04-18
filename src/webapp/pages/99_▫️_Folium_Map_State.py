@@ -35,7 +35,7 @@ def main():
             html_data = f.read()
     
     # Display the map using st.html
-    st.html(html_data, height=500)
+    st.html(html_data)
 
 
 
