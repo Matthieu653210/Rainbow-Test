@@ -27,13 +27,14 @@ def main():
     # Create the map
     m = create_toulouse_map()
 
-    # Save to temporary HTML file
-    with tempfile.NamedTemporaryFile(suffix=".html", delete=False) as f:
-        m.save(f.name)
-        html_path = Path(f.name)
-
-    # Create iframe pointing to the HTML file
-    iframe = f'<iframe src="{html_path.as_uri()}" width="100%" height="500" style="border:none;"></iframe>'
+    # Save map to HTML string
+    html = m.get_root().render()
+    
+    # Create iframe with data URI
+    iframe = f"""
+    <iframe srcdoc="{html}" width="100%" height="500" style="border:none;">
+    </iframe>
+    """
     
     # Display map using st.markdown with iframe
     st.markdown(iframe, unsafe_allow_html=True)
