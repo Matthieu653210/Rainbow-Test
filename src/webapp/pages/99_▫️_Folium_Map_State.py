@@ -36,8 +36,8 @@ def main():
     with open(tmp_path, 'r') as f:
         html_data = f.read()
     
-    # Display the map using st.html with explicit height
-    st.html(html_data)
+    # Display the map using st.markdown with unsafe_allow_html
+    st.markdown(html_data, unsafe_allow_html=True)
     
     # Clean up the temporary file
     import os
