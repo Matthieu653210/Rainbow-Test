@@ -37,7 +37,7 @@ def main():
         html_data = f.read()
     
     # Display the map using st.html with explicit height
-    st.html(html_data, height=600)
+    st.html(html_data)
     
     # Clean up the temporary file
     import os
