@@ -33,7 +33,7 @@ def main():
         html_path = Path(f.name)
 
     # Display map using iframe
-    st.components.v1.html(html_path.read_text(), height=500)
+    st.html(html_path.read_text())
 
 
 main()
