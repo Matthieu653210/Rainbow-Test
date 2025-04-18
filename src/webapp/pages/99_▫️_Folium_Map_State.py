@@ -30,11 +30,11 @@ def main():
     import html
     
     # Save map to HTML string
-    html = m.get_root().render()
+    map_html = m.get_root().render()
     
     # Create iframe with escaped HTML content
     iframe = f"""
-    <iframe srcdoc="{html.escape(html)}" width="100%" height="500" style="border:none;">
+    <iframe srcdoc="{html.escape(map_html)}" width="100%" height="500" style="border:none;">
     </iframe>
     """
     
