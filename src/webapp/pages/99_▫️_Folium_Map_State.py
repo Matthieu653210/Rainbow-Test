@@ -1,8 +1,9 @@
+import base64
 import tempfile
-from pathlib import Path
 
 import folium
 import streamlit as st
+import streamlit.components.v1 as components
 
 
 def create_toulouse_map() -> folium.Map:
@@ -28,21 +29,18 @@ def main():
     m = create_toulouse_map()
 
     # Save map to a temporary HTML file
-    with tempfile.NamedTemporaryFile(delete=False, suffix='.html') as tmp:
+    with tempfile.NamedTemporaryFile(delete=False, suffix=".html") as tmp:
         tmp_path = tmp.name
         m.save(tmp_path)
-    
-    # Read the saved HTML file
-    with open(tmp_path, 'r') as f:
-        html_data = f.read()
-    
-    # Display the map using st.markdown with unsafe_allow_html
-    st.markdown(html_data, unsafe_allow_html=True)
-    
-    # Clean up the temporary file
-    import os
-    os.unlink(tmp_path)
 
+    # Read the saved HTML file
+    HtmlFile = open(tmp_path, "r")
+    raw_html = HtmlFile.read().encode("utf-8")
+    raw_html = base64.b64encode(raw_html).decode()
+    components.iframe(f"data:text/html;base64,{raw_html}", height=400)
+
+    # The previous code work. 
+    # try to display the same with st.html() , and with st.markdown() AI!
 
 
 main()
