@@ -39,7 +39,9 @@ def main():
     raw_html = base64.b64encode(raw_html).decode()
     components.iframe(f"data:text/html;base64,{raw_html}", height=400)
 
-    # Save also the map as image and display it with st.image() AI!
+    # Save map as PNG image
+    img_data = m._to_png()
+    st.image(img_data, caption="Toulouse Map", use_column_width=True)
 
 
 main()
