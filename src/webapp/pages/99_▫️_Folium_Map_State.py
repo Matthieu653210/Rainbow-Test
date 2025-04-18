@@ -27,10 +27,15 @@ def main():
     # Create the map
     m = create_toulouse_map()
 
-    # Complete code to display the map as HTML (using Folium.Map.save()) inside a st.markdown() and st.HTML()  AI!
-
-
-
+    # Save map to a temporary HTML file
+    with tempfile.NamedTemporaryFile(delete=False, suffix='.html') as tmp:
+        m.save(tmp.name)
+        # Read the saved HTML file
+        with open(tmp.name, 'r') as f:
+            html_data = f.read()
+    
+    # Display the map using st.markdown and st.components.html
+    st.components.html(html_data, height=500)
 
 
 
