@@ -32,8 +32,11 @@ def main():
         m.save(f.name)
         html_path = Path(f.name)
 
-    # Display map using iframe
-    st.html(html_path.read_text())
+    # Create iframe pointing to the HTML file
+    iframe = f'<iframe src="{html_path.as_uri()}" width="100%" height="500" style="border:none;"></iframe>'
+    
+    # Display map using st.markdown with iframe
+    st.markdown(iframe, unsafe_allow_html=True)
 
 
 main()
