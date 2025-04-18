@@ -41,5 +41,7 @@ def main():
     # Display map using st.markdown with iframe
     st.markdown(iframe, unsafe_allow_html=True)
 
+    st.html(iframe)
+
 
 main()
