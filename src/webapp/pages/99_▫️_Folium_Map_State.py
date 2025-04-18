@@ -28,7 +28,7 @@ def main():
     m = create_toulouse_map()
 
     # Display the map using Streamlit's components API
-    st.components.v1.html(m._repr_html_(), height=500)
+    st.html(m._repr_html_())
 
 
 main()
