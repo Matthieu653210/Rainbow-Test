@@ -29,13 +29,19 @@ def main():
 
     # Save map to a temporary HTML file
     with tempfile.NamedTemporaryFile(delete=False, suffix='.html') as tmp:
-        m.save(tmp.name)
-        # Read the saved HTML file
-        with open(tmp.name, 'r') as f:
-            html_data = f.read()
+        tmp_path = tmp.name
+        m.save(tmp_path)
     
-    # Display the map using st.html
-    st.html(html_data)
+    # Read the saved HTML file
+    with open(tmp_path, 'r') as f:
+        html_data = f.read()
+    
+    # Display the map using st.html with explicit height
+    st.html(html_data, height=600)
+    
+    # Clean up the temporary file
+    import os
+    os.unlink(tmp_path)
 
 
 
