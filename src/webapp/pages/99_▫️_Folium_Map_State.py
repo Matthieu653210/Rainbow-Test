@@ -38,20 +38,8 @@ def main():
     raw_html = HtmlFile.read().encode("utf-8")
     raw_html = base64.b64encode(raw_html).decode()
     components.iframe(f"data:text/html;base64,{raw_html}", height=400)
-    
-    # Display using st.html()
-    st.subheader("Map displayed with st.html()")
-    with open(tmp_path, "r") as f:
-        html_content = f.read()
-    st.html(html_content, height=400)
-    
-    # Display using st.markdown()
-    st.subheader("Map displayed with st.markdown()")
-    st.markdown(html_content, unsafe_allow_html=True)
-    
-    # Clean up the temporary file
-    import os
-    os.unlink(tmp_path)
+
+    # Save also the map as image and display it with st.image() AI!
 
 
 main()
