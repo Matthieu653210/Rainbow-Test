@@ -32,12 +32,8 @@ def main():
         m.save(f.name)
         html_path = Path(f.name)
 
-    print(html_path)
-    # Read HTML content
-    html = html_path.read_text()
-
-    # Display map using st.markdown
-    st.markdown(html, unsafe_allow_html=True)
+    # Display map using iframe
+    st.components.v1.html(html_path.read_text(), height=500)
 
 
 main()
