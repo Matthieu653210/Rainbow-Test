@@ -27,12 +27,14 @@ def main():
     # Create the map
     m = create_toulouse_map()
 
+    import html
+    
     # Save map to HTML string
     html = m.get_root().render()
     
-    # Create iframe with data URI
+    # Create iframe with escaped HTML content
     iframe = f"""
-    <iframe srcdoc="{html}" width="100%" height="500" style="border:none;">
+    <iframe srcdoc="{html.escape(html)}" width="100%" height="500" style="border:none;">
     </iframe>
     """
     
