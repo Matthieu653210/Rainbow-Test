@@ -34,8 +34,8 @@ def main():
         with open(tmp.name, 'r') as f:
             html_data = f.read()
     
-    # Display the map using st.markdown and st.components.html
-    st.components.html(html_data, height=500)
+    # Display the map using st.html
+    st.html(html_data, height=500)
 
 
 
