@@ -21,8 +21,6 @@ def create_toulouse_map() -> folium.Map:
     return m
 
 
-# Why the following  display HTML code and not the MAP ?  Fix it AI!
-
 def main():
     st.title("Toulouse Map")
 
@@ -35,18 +33,10 @@ def main():
         html_path = Path(f.name)
 
     # Create iframe pointing to the HTML file
-
-    plot_file = open(html_path, "r")
-    plot = plot_file.read()
-
-    # iframe = f'<iframe src="{c.as_uri()}"</iframe>'
-    # # iframe = f"<iframe src={html_path.as_uri()}</iframe>"
-    # st.write(iframe)
-
+    iframe = f'<iframe src="{html_path.as_uri()}" width="100%" height="500" style="border:none;"></iframe>'
+    
     # Display map using st.markdown with iframe
-    st.markdown(plot, unsafe_allow_html=True)
-    st.write("HTML")
-    st.html(plot)
+    st.markdown(iframe, unsafe_allow_html=True)
 
 
 main()
