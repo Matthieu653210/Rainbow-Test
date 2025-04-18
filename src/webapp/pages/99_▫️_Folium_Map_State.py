@@ -27,21 +27,8 @@ def main():
     # Create the map
     m = create_toulouse_map()
 
-    import html
-    
-    # Save map to HTML string
-    map_html = m.get_root().render()
-    
-    # Create iframe with escaped HTML content
-    iframe = f"""
-    <iframe srcdoc="{html.escape(map_html)}" width="100%" height="500" style="border:none;">
-    </iframe>
-    """
-    
-    # Display map using st.markdown with iframe
-    st.markdown(iframe, unsafe_allow_html=True)
-
-    st.html(iframe)
+    # Display the map using Streamlit's components API
+    st.components.v1.html(m._repr_html_(), height=500)
 
 
 main()
