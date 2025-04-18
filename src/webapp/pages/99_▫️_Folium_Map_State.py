@@ -23,25 +23,19 @@ def create_toulouse_map() -> folium.Map:
 
 
 def main():
-    st.title("Toulouse Map")
+    st.title("Toulouse Map1")
 
     # Create the map
     m = create_toulouse_map()
 
-    # Save map to a temporary HTML file
     with tempfile.NamedTemporaryFile(delete=False, suffix=".html") as tmp:
         tmp_path = tmp.name
         m.save(tmp_path)
 
-    # Read the saved HTML file
     HtmlFile = open(tmp_path, "r")
     raw_html = HtmlFile.read().encode("utf-8")
     raw_html = base64.b64encode(raw_html).decode()
     components.iframe(f"data:text/html;base64,{raw_html}", height=400)
-
-    # Save map as PNG image
-    img_data = m._to_png()
-    st.image(img_data, caption="Toulouse Map", use_column_width=True)
 
 
 main()

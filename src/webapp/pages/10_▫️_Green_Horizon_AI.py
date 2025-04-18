@@ -4,6 +4,9 @@ Provides a Streamlit-based chat interface powered by SmolAgents to query and vis
 CO2 emissions data. Includes tools for data retrieval, web search, and visualization.
 """
 
+from pathlib import Path
+from typing import Any
+
 import folium
 import pandas as pd
 import streamlit as st
@@ -29,6 +32,7 @@ MODEL_ID = None  # Use the one by configuration
 # MODEL_ID = "qwen_qwq32_openrouter"
 
 SAMPLE_PROMPTS = [
+    "what is sin(1.2345678) ?",
     "what was the CO2 emissions of Brazil for energy generation in 2023",
     "Generate a bar chart with emissions by sector for France in 2022",
     "Create a pie chart of emissions by sector",
@@ -73,21 +77,16 @@ def get_data(dataset: str) -> pd.DataFrame:
     return df
 
 
-@st.cache_resource()
-def folium_map() -> folium.Map:
-    return folium.Map(location=[39.949610, -75.150282], zoom_start=16)
+# @tool
+# def get_follium_map() -> folium.Map:
+#     """
+#     Display a map at a given location (a country, a town, an address, ....)
+#     Args:
+#         latitude : latitude of the location
+#         longitude: longitude of the location
+#     """
 
-
-@tool
-def display_map(latitude: float, longitude: float) -> None:
-    """
-    Display a map at a given location (a country, a town, an address, ....)
-    Args:
-        latitude : latitude of the location
-        longitude: longitude of the location
-    """
-
-    folium_map().location = [latitude, longitude]
+#     folium_map().location = [latitude, longitude]
 
 
 @tool
@@ -100,54 +99,108 @@ def get_CO2_emissions_data_frame() -> pd.DataFrame:
     return get_data("country CO2 emissions")
 
 
+@tool
+def print_answer(answer: Any) -> None:
+    """Provides a final answer to the given query
+
+    Args:
+        answer : The final answer to the query. Can be either markdown string, or a Follium.Map object, or a Path to an image, or a Pandas Dataframe.
+    """
+
+    st.session_state.agent_output.append(answer)
+    print("answer displayed: {answer}")
+
+
+def update_display() -> None:
+    for msg in st.session_state.agent_output:
+        if isinstance(msg, str):
+            st.markdown(msg)
+        elif isinstance(msg, folium.Map):
+            st_folium(msg)
+        elif isinstance(msg, pd.DataFrame):
+            st.dataframe(msg)
+        elif isinstance(msg, Path):
+            st.image(msg)
+        else:
+            st.write(f"unhandled type : '{type(msg)}")
+
+
 st.title("Green Horizon AI Chat")
 llm_config_widget(st.sidebar)
 
 model_name = LlmFactory(llm_id=MODEL_ID).get_litellm_model_name()
 llm = LiteLLMModel(model_id=model_name)
 
+
+if "agent_output" not in st.session_state:
+    st.session_state.agent_output = []
+
+
 with st.expander(label="Prompt examples", expanded=True):
     st.write(SAMPLE_PROMPTS)
 
 AUTHORIZED_IMPORTS = [
+    "pathlib",
     "pandas",
-    "matplotlib.pyplot",
-    "matplotlib",
+    "matplotlib.*",
     "numpy",
     "json",
     "streamlit",
     "base64",
     "tempfile",
     "sklearn",
+    "folium",
 ]
-PRE_PROMPT = dedent_ws(f"""
+
+FOLIUM_INSTRUCTION = dedent_ws(
+    """ 
+    - Use Folium to display a map. For example: 
+        -- to display map at a given location, call  folium.Map([latitude, longitude])
+        -- Do your best to select the zoom factor so whole location enter globaly in the map
+        -- output the map object
+"""
+)
+
+IMAGE_INSTRUCTION = dedent_ws(
+    """ 
+    -  When creating a plot or generating an image, save it as png in /temp, and call print_answer with the pathlib.Path  
+"""
+)
+
+PRE_PROMPT = dedent_ws(
+    f"""
     Answer following request. 
-    You can use only the following packages:  {", ".join(AUTHORIZED_IMPORTS)}
+    You can use ONLY the following packages:  {", ".join(AUTHORIZED_IMPORTS)}
     Instructions:
     - Don't generate "if __name__ == "__main__"
     - Don't use st.sidebar
-    - Generate files (plot, diagrams) under temp directory.
-    - Write outcomes in Markdown using 'st.markdown(...)'.\n
-    - When  displaying an image, call st.image  and st.markdown with the file path. 
+    - Use function 'print_answer' to generate outcome. It can be markdown, or a pathlib.Path to a generated image, or whenever possible  Python objects of Pandas Dataframe, or Follium Map.
     - Print also the outcome on stdio, or the title if it's a diagram.
-    - Use display_map function to display map
+    - {FOLIUM_INSTRUCTION}
+    - {IMAGE_INSTRUCTION}
+
     \nRequest :
-    """)
+    """
+)
 
 # When  displaying an image, call st.makdown with <img> tag and base64 encoded file.  Don't forget  unsafe_allow_html=True option.\n
 
 
 col1, col2 = st.columns(2)
-with col2:
-    with st.expander("map", expanded=True):
-        st_data = st_folium(folium_map(), width=725)
 with col1:
     if prompt := st.chat_input("What would you like to ask SmolAgents?"):
+        # st.session_state.agent_output = []
         agent = CodeAgent(
-            tools=[get_CO2_emissions_data_frame, display_map, DuckDuckGoSearchTool(), VisitWebpageTool()],
+            tools=[get_CO2_emissions_data_frame, print_answer, DuckDuckGoSearchTool(), VisitWebpageTool()],
             model=llm,
             additional_authorized_imports=AUTHORIZED_IMPORTS,
+            max_steps=5,  # for debug
         )
 
         with st.container(height=600):
             stream_to_streamlit(agent, PRE_PROMPT + prompt, additional_args={"st": col2})
+
+    debug(st.session_state.agent_output)
+    with col2:
+        st.write("answer:")
+        update_display()

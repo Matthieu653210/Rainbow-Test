@@ -63,6 +63,8 @@ aider:  ## Call aider-chat (a coding assistant)
 	aider $(AIDER_OPTS) --model openrouter/deepseek/deepseek-chat
 aider-haiku: 
 	aider $(AIDER_OPTS) --cache-prompts --model openrouter/anthropic/claude-3-5-haiku;   
+aider-sonnet: 
+	aider $(AIDER_OPTS) --cache-prompts --model openrouter/anthropic/claude-3.7-sonnet;   
 aider-r1:
 	aider $(AIDER_OPTS) --model deepseek/deepseek-reasoner; 
 aider-o3:
