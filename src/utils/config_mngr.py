@@ -173,7 +173,6 @@ class OmegaConfig(BaseModel):
                 raise ValueError(f"Missing required keys '{key}': {', '.join(missing_keys)}")
         return result
 
-    # check that the path is a directory AI!
     def get_dir_path(self, key: str, create_if_not_exists: bool = False) -> Path:
         """Get a directory path.
 
@@ -183,7 +182,7 @@ class OmegaConfig(BaseModel):
         Returns:
             The Path object
         Raises:
-            ValueError: If path doesn't exist and create_if_not_exists=False
+            ValueError: If path doesn't exist, is not a directory, or create_if_not_exists=False
         """
         path = Path(self.get_str(key))
         if not path.exists():
@@ -192,6 +191,8 @@ class OmegaConfig(BaseModel):
                 path.mkdir(parents=True, exist_ok=True)
             else:
                 raise ValueError(f"Directory path for '{key}' does not exist: '{path}'")
+        if not path.is_dir():
+            raise ValueError(f"Path for '{key}' is not a directory: '{path}'")
         return path
 
     def get_file_path(self, key: str) -> Path:
