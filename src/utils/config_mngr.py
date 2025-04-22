@@ -173,6 +173,7 @@ class OmegaConfig(BaseModel):
                 raise ValueError(f"Missing required keys '{key}': {', '.join(missing_keys)}")
         return result
 
+    # check that the path is a directory AI!
     def get_dir_path(self, key: str, create_if_not_exists: bool = False) -> Path:
         """Get a directory path.
 
@@ -193,26 +194,11 @@ class OmegaConfig(BaseModel):
                 raise ValueError(f"Directory path for '{key}' does not exist: '{path}'")
         return path
 
-    def get_file_path(self, key: str, create_parent_dir: bool = False) -> Path:
-        """Get a file path.
-
-        Args:
-            key: Configuration key containing the path
-            create_parent_dir: If True, create parent directory when missing
-        Returns:
-            The Path object
-        Raises:
-            ValueError: If path doesn't exist or parent directory is missing
-        """
+    def get_file_path(self, key: str) -> Path:
+        """Get a file path."""
         path = Path(self.get_str(key))
         if not path.exists():
-            if create_parent_dir:
-                parent = path.parent
-                if not parent.exists():
-                    logger.warning(f"Creating missing parent directory: {parent}")
-                    parent.mkdir(parents=True, exist_ok=True)
-            else:
-                raise ValueError(f"File path for '{key}' does not exist: '{path}'")
+            raise ValueError(f"File path for '{key}' does not exist: '{path}'")
         return path
 
 
@@ -258,7 +244,7 @@ if __name__ == "__main__":
     print(global_config().get_str("llm.default_model"))
 
     global_config().select_config("edc_local")
-    print(global_config().get_path("ecod_project.datasets_root"))
+    print(global_config().get_dir_path("ecod_project.datasets_root"))
 
     print(global_config().root.default_config)
     print(global_config().selected.llm.default_model)
