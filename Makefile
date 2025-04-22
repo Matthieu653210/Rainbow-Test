@@ -252,8 +252,13 @@ help:
 
 
 test_install:  ## Launch cli.py and run LangChain with fake LLM
-	export PYTHONPATH=".":$(PYTHONPATH)
-	echo bears | uv run cli run  joke  -m  fake_parrot_local	
+	@if [ -z "$(PYTHONPATH)" ]; then \
+		echo "Warning: PYTHONPATH is not set. Setting it to current directory."; \
+		export PYTHONPATH="."; \
+	else \
+		export PYTHONPATH=".":$(PYTHONPATH); \
+	fi
+	echo bears | uv run cli run joke -m fake_parrot_local
 
 ##############################
 ##  Project specific commands
