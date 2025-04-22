@@ -52,7 +52,7 @@ class LlmCache:
             raise ValueError(f"Unknown cache method '{value}'. Should be in {LlmCache.values()}") from e
 
         if method == "sqlite":
-            path = global_config().get_path("llm.cache_path", create_dir_if_not_exists=True)
+            path = global_config().get_file_path("llm.cache_path", check_if_exists=False)
             if not path.parent.exists():
                 path.parent.mkdir(parents=True, exist_ok=True)
             return SQLiteCache(database_path=str(path))

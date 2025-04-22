@@ -20,7 +20,7 @@ st.set_page_config(
 
 
 # Get Streamlit pages to display from config
-pages_dir = global_config().get_path("ui.pages_dir")
+pages_dir = global_config().get_dir_path("ui.pages_dir")
 # Sort files by the number at the beginning of their name
 pages_fn = sorted(
     pages_dir.glob("*.py"), key=lambda f: int(f.name.split("_")[0]) if f.name.split("_")[0].isdigit() else 0

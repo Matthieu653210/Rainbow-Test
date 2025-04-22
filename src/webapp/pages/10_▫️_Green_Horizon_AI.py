@@ -67,7 +67,7 @@ def get_data(dataset: str) -> pd.DataFrame:
         DataFrame containing emissions data by country and sector.
     """
     description, data_set = DATASETS[dataset]
-    data_file = global_config().get_path("datasets_root") / data_set
+    data_file = global_config().get_dir_path("datasets_root") / data_set
     debug(data_file, description)
     assert data_file.exists(), f"file  not found: {data_file}"
     if data_file.name.endswith(".csv"):

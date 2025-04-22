@@ -20,6 +20,7 @@ dependencies = [
     "smolagents[gradio]>=1.13.0",
     "streamlit-folium>=0.24.1",
     "streamlit-extras>=0.6.0",
+    "playwright>=1.51.0",
 ]
 
 [project.urls]

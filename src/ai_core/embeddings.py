@@ -95,7 +95,7 @@ def _read_embeddings_list_file() -> list[EmbeddingsInfo]:
     Raises:
         AssertionError: If configuration file is not found
     """
-    yml_file = global_config().get_path("embeddings.list")
+    yml_file = global_config().get_file_path("embeddings.list")
     with open(yml_file) as f:
         data = yaml.safe_load(f)
     embeddings = []
@@ -258,7 +258,7 @@ class EmbeddingsFactory(BaseModel):
         Returns:
             Cached embeddings model with persistent storage
         """
-        file_store_path = global_config().get_path("kv_store.path")
+        file_store_path = global_config().get_dir_path("kv_store.path")
         file_store = LocalFileStore(file_store_path / "embeddings_cache")
         cached_embedder = CacheBackedEmbeddings.from_bytes_store(self.get(), file_store, namespace=self.embeddings_id)  # type: ignore
         return cached_embedder

@@ -195,10 +195,10 @@ class OmegaConfig(BaseModel):
             raise ValueError(f"Path for '{key}' is not a directory: '{path}'")
         return path
 
-    def get_file_path(self, key: str) -> Path:
+    def get_file_path(self, key: str, check_if_exists: bool = True) -> Path:
         """Get a file path."""
         path = Path(self.get_str(key))
-        if not path.exists():
+        if not path.exists() and check_if_exists:
             raise ValueError(f"File path for '{key}' does not exist: '{path}'")
         return path
 

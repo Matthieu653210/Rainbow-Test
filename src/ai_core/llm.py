@@ -127,7 +127,7 @@ class LlmInfo(BaseModel):
 def _read_llm_list_file() -> list[LlmInfo]:
     """Read the YAML file with list of LLM providers and info."""
     # The name of the file is in the configuration file
-    yml_file = global_config().get_path("llm.list")
+    yml_file = global_config().get_file_path("llm.list")
     with open(yml_file) as f:
         data = yaml.safe_load(f)
 
