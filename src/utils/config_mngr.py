@@ -173,6 +173,7 @@ class OmegaConfig(BaseModel):
                 raise ValueError(f"Missing required keys '{key}': {', '.join(missing_keys)}")
         return result
 
+    # split get_path in 2 functions : one to get path to directoty, and another one to get path to file AI! 
     def get_path(self, key: str, create_dir_if_not_exists: bool = False) -> Path:
         """Get a file or dir path.
 
