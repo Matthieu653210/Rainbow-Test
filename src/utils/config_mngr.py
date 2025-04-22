@@ -173,31 +173,46 @@ class OmegaConfig(BaseModel):
                 raise ValueError(f"Missing required keys '{key}': {', '.join(missing_keys)}")
         return result
 
-    # split get_path in 2 functions : one to get path to directoty, and another one to get path to file AI! 
-    def get_path(self, key: str, create_dir_if_not_exists: bool = False) -> Path:
-        """Get a file or dir path.
+    def get_dir_path(self, key: str, create_if_not_exists: bool = False) -> Path:
+        """Get a directory path.
 
         Args:
             key: Configuration key containing the path
-            create_dir_if_not_exists: If True, create parent directory when missing for files
+            create_if_not_exists: If True, create directory when missing
         Returns:
             The Path object
         Raises:
-            ValueError: If path doesn't exist and create_dir_if_not_exists=False
+            ValueError: If path doesn't exist and create_if_not_exists=False
         """
         path = Path(self.get_str(key))
         if not path.exists():
-            if create_dir_if_not_exists:
-                if path.suffix:  # This is a file path
-                    parent = path.parent
-                    if not parent.exists():
-                        logger.warning(f"Creating missing parent directory: {parent}")
-                        parent.mkdir(parents=True, exist_ok=True)
-                else:  # This is a directory path
-                    logger.warning(f"Creating missing directory: {path}")
-                    path.mkdir(parents=True, exist_ok=True)
+            if create_if_not_exists:
+                logger.warning(f"Creating missing directory: {path}")
+                path.mkdir(parents=True, exist_ok=True)
             else:
-                raise ValueError(f"Path value for '{key}' does not exist: '{path}'")
+                raise ValueError(f"Directory path for '{key}' does not exist: '{path}'")
+        return path
+
+    def get_file_path(self, key: str, create_parent_dir: bool = False) -> Path:
+        """Get a file path.
+
+        Args:
+            key: Configuration key containing the path
+            create_parent_dir: If True, create parent directory when missing
+        Returns:
+            The Path object
+        Raises:
+            ValueError: If path doesn't exist or parent directory is missing
+        """
+        path = Path(self.get_str(key))
+        if not path.exists():
+            if create_parent_dir:
+                parent = path.parent
+                if not parent.exists():
+                    logger.warning(f"Creating missing parent directory: {parent}")
+                    parent.mkdir(parents=True, exist_ok=True)
+            else:
+                raise ValueError(f"File path for '{key}' does not exist: '{path}'")
         return path
 
 
