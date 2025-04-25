@@ -1,9 +1,10 @@
+# add module doc and docstrings AI!
+
 import os
 from io import BytesIO
 from pathlib import Path
 
 import pandas as pd
-import streamlit as st
 from streamlit.runtime.uploaded_file_manager import UploadedFile
 
 TABULAR_FILE_FORMATS_READERS = {
@@ -14,11 +15,10 @@ TABULAR_FILE_FORMATS_READERS = {
 }
 
 
-def load_tabular_data(file_or_filename: Path | UploadedFile, **kwargs) -> pd.DataFrame | None:
+def load_tabular_data(file_or_filename: Path | UploadedFile, **kwargs) -> pd.DataFrame:
     if isinstance(file_or_filename, Path):
-        assert file_or_filename.exists
-        with open(file_or_filename, "rb") as file:
-            loaded_file = BytesIO(file.read())
+        assert file_or_filename.exists()
+        loaded_file = BytesIO(file_or_filename.read_bytes())
         loaded_file.name = file_or_filename.name
     elif isinstance(file_or_filename, UploadedFile):
         loaded_file = file_or_filename
@@ -28,5 +28,4 @@ def load_tabular_data(file_or_filename: Path | UploadedFile, **kwargs) -> pd.Dat
     if ext in TABULAR_FILE_FORMATS_READERS:
         return TABULAR_FILE_FORMATS_READERS[ext](loaded_file, **kwargs)
     else:
-        st.error(f"Unsupported file format: {ext}")
-        return None
+        raise ValueError(f"Unsupported file format: {ext}")
