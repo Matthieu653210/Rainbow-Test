@@ -1,9 +1,11 @@
 # Aider Prompt:
 # This file is a port of https://github.com/huggingface/smolagents/blob/main/src/smolagents/gradio_ui.py."""
 # to work with Streamlit.  
-#  Update the code accordin to the changes in the original file. Keep the changes 
-# , such as use the 'to_raw' method to use AgentImage in st.image(), 
-#   Replace relative import by absolute import from smolagents, add st.extanders etc.
+#  Update that code according to the changes in current file version. 
+#  Take my changes into account, such as 
+#    - use the 'to_raw' method to use AgentImage in st.image(), 
+#    - Replace relative import by absolute import from smolagents
+#    - add st.extanders etc.
 # AI!
 
 # 
