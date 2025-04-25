@@ -18,13 +18,13 @@ Streamlit UI components for displaying Smol Agents execution steps and results.
 Provides functions to visualize agent steps, including code execution, planning,
 and final answers in a Streamlit interface.
 """
-import re
-import streamlit as st
 
+import re
+
+import streamlit as st
 from smolagents.agent_types import AgentAudio, AgentImage, AgentText
 from smolagents.agents import PlanningStep
 from smolagents.memory import ActionStep, FinalAnswerStep, MemoryStep
-from smolagents.utils import _is_package_available
 
 
 def get_step_footnote(step_log: MemoryStep, step_name: str) -> str:
@@ -110,7 +110,7 @@ def stream_to_streamlit(
     task_images: list | None = None,
     reset_agent_memory: bool = False,
     additional_args: dict | None = None,
-):
+) -> None:
     """Runs an agent with the given task and displays the steps in Streamlit"""
     total_input_tokens = 0
     total_output_tokens = 0
