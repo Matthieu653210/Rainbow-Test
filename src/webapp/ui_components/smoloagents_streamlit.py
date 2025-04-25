@@ -1,14 +1,9 @@
 # Aider Prompt:
 # This file is a port of https://github.com/huggingface/smolagents/blob/main/src/smolagents/gradio_ui.py."""
 # to work with Streamlit.  
-#  Update that code according to the changes in current file version. 
+#  
+# Update that code according to the changes in current file version. 
 #  Take my changes into account, such as 
-#    - use the 'to_raw' method to use AgentImage in st.image(), 
-#    - Replace relative import by absolute import from smolagents
-#    - add st.extanders etc.
-# AI!
-
-# 
 #!/usr/bin/env python
 # coding=utf-8
 # Copyright 2024 The HuggingFace Inc. team. All rights reserved.
@@ -31,6 +26,9 @@ from typing import Optional
 import streamlit as st
 from rich import print
 from smolagents.agent_types import AgentAudio, AgentImage, AgentText, handle_agent_output_types
+from smolagents.agents import ActionStep
+from smolagents.memory import MemoryStep
+from smolagents.utils import _is_package_available
 from smolagents.agents import ActionStep
 from smolagents.memory import MemoryStep
 from smolagents.utils import _is_package_available
@@ -75,7 +73,7 @@ def display_step(step_log: MemoryStep) -> None:
                 log_content = step_log.observations.strip()
                 log_content = re.sub(r"^Execution logs:\s*", "", log_content)
                 if log_content:
-                    with st.expander("📝 Execution Logs"):
+                    with st.expander("📝 Execution Logs", expanded=True):
                         st.write(log_content)
 
             # Display errors
@@ -124,7 +122,8 @@ def stream_to_streamlit(agent, task: str, reset_agent_memory: bool = False, addi
     if isinstance(final_answer, AgentText):
         st.markdown(f"**Final answer:**\n{final_answer.to_string()}\n")
     elif isinstance(final_answer, AgentImage):
-        st.image(final_answer.to_raw())
+        with st.expander("🖼️ Generated Image", expanded=True):
+            st.image(final_answer.to_raw())
     elif isinstance(final_answer, AgentAudio):
         st.audio(final_answer.to_string(), format="audio/wav")
     else:
