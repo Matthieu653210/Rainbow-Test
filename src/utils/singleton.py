@@ -10,6 +10,9 @@ since the class has not to be specialized to become a singleton.
 
 """
 
+
+from __future__ import annotations
+
 import inspect
 from functools import wraps
 from threading import Lock
@@ -112,6 +115,8 @@ def once_fn() -> Callable[[Callable[..., R]], Callable[..., R]]:
 
 
 # TEST
+
+
 if __name__ == "__main__":
     from pydantic import BaseModel, ConfigDict
 
@@ -121,12 +126,12 @@ if __name__ == "__main__":
         b: int = 1
 
         @once
-        def singleton() -> "TestClass1":
+        def singleton() -> TestClass1:
             """Returns a singleton instance of the class"""
             return TestClass1(a=1)
 
         @once
-        def singleton2(a: int, b: int) -> "TestClass1":
+        def singleton2(a: int, b: int) -> TestClass1:
             """Returns a singleton instance of the class"""
             return TestClass1(a=a, b=b)
 

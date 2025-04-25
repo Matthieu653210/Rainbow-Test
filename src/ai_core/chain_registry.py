@@ -29,6 +29,8 @@ Example:
     >>> result = chain.invoke("input text")
 """
 
+from __future__ import annotations
+
 import importlib
 from typing import Any, Callable
 
@@ -111,7 +113,7 @@ class ChainRegistry(BaseModel):
     registry: list[RunnableItem] = []
 
     @once
-    def instance() -> "ChainRegistry":
+    def instance() -> ChainRegistry:
         """Create Registry instance"""
 
         return ChainRegistry(registry=[])

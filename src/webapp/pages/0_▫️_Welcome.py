@@ -17,10 +17,11 @@ import streamlit as st
 
 title_col1, title_col2 = st.columns([2, 1])
 
-logo_eviden = str(Path.cwd() / "src/webapp/static/eviden-logo-white.png")
 
 title_col1.title("Welcome ! ")
-title_col2.image(logo_eviden, width=250)
+LOGO = "New Atos logo white.png"
+logo = str(Path.cwd() / "src/webapp/static" / LOGO)
+title_col2.image(logo, width=250)
 title_col1.markdown(
     """
     ### ☜ ☜ Select a demo or a Playground! 

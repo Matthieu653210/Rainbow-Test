@@ -35,6 +35,8 @@ Example Usage:
 # get_str\(([^,]+)",\s"*([^,]+)\)
 # -> get_str($1.$2)
 
+from __future__ import annotations
+
 import os
 import sys
 from pathlib import Path
@@ -71,7 +73,7 @@ class OmegaConfig(BaseModel):
         return self.root.get("baseline")
 
     @once
-    def singleton() -> "OmegaConfig":
+    def singleton() -> OmegaConfig:
         """Returns the singleton instance of Config."""
 
         # config_loguru()

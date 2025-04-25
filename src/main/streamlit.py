@@ -1,4 +1,6 @@
 # Main Streamlit application configuration and setup
+from pathlib import Path
+
 import streamlit as st
 from dotenv import load_dotenv
 from loguru import logger
@@ -18,7 +20,9 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-
+LOGO = "New Atos logo white.png"
+logo = str(Path.cwd() / "src/webapp/static" / LOGO)
+st.logo(logo, size="medium")
 # Get Streamlit pages to display from config
 pages_dir = global_config().get_dir_path("ui.pages_dir")
 # Sort files by the number at the beginning of their name

@@ -25,8 +25,7 @@ SAMPLE_PROMPTS = [
 ]
 
 
-st.title("SmolAgents Chat")
-st.logo(str(Path.cwd() / "src/webapp/static/eviden-logo-white.png"), size="large")
+
 llm_config_widget(st.sidebar)
 
 

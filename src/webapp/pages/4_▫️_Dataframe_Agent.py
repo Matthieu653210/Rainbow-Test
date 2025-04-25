@@ -47,10 +47,10 @@ SAMPLE_PROMPTS = [
 title_col1, title_col2 = st.columns([2, 1])
 
 llm_config_widget(st.sidebar, False)
-logo_eviden = str(Path.cwd() / "src/webapp/static/eviden-logo-white.png")
+
 
 title_col1.title("DataFrame Agent")
-title_col2.image(logo_eviden, width=250)
+#title_col2.image(logo_eviden, width=250)
 title_col1.markdown(
     """
     ## Demo of an Agent to analyse a Dataframe.

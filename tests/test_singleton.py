@@ -2,6 +2,8 @@
 Tests for the singleton.py module.
 """
 
+from __future__ import annotations
+
 from pydantic import BaseModel, ConfigDict
 
 from src.utils.singleton import once
@@ -12,7 +14,7 @@ class SingletonExample(BaseModel):
     value: int
 
     @once
-    def singleton() -> "SingletonExample":
+    def singleton() -> SingletonExample:
         """Returns a singleton instance of the class."""
         return SingletonExample(value=42)
 
