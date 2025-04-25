@@ -104,13 +104,28 @@ with tab_custom:
         type=list(TABULAR_FILE_FORMATS_READERS.keys()),
         # on_change=clear_submit,
     )
-# display the list if demos from DEMOS. When one is selected, extract the tools and the 
-# list of examples, and display them in 2 different columns. 
-# Set the selected example in a variable "input"
-# AI!
 with tab_demos:
-    ... 
-    raw_data_file = 
+    selected_demo = st.selectbox(
+        "Select a demo",
+        options=[demo.name for demo in DEMOS],
+        index=0,
+        key="selected_demo"
+    )
+    
+    demo = next(d for d in DEMOS if d.name == selected_demo)
+    raw_data_file = demo.source
+    
+    col1, col2 = st.columns(2)
+    with col1:
+        st.write("**Available Tools:**")
+        for tool in demo.tools:
+            st.write(f"- {tool.name}")
+    
+    with col2:
+        st.write("**Example Prompts:**")
+        for example in demo.examples:
+            if st.button(example, use_container_width=True):
+                input = example
     ...
 
 
