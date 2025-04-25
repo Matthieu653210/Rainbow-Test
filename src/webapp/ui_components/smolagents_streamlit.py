@@ -20,6 +20,7 @@ and final answers in a Streamlit interface.
 """
 
 import re
+from typing import Any
 
 import streamlit as st
 from smolagents.agent_types import AgentAudio, AgentImage, AgentText
@@ -39,7 +40,7 @@ def get_step_footnote(step_log: MemoryStep, step_name: str) -> str:
     return step_footnote
 
 
-def display_step(step_log: MemoryStep):
+def display_step(step_log: MemoryStep) -> None:
     """Display agent steps in Streamlit with proper formatting"""
     if isinstance(step_log, ActionStep):
         step_number = f"Step {step_log.step_number}" if step_log.step_number is not None else "Step"
@@ -105,11 +106,11 @@ def display_step(step_log: MemoryStep):
 
 
 def stream_to_streamlit(
-    agent,
+    agent: Any,
     task: str,
-    task_images: list | None = None,
+    task_images: list[Any] | None = None,
     reset_agent_memory: bool = False,
-    additional_args: dict | None = None,
+    additional_args: dict[str, Any] | None = None,
 ) -> None:
     """Runs an agent with the given task and displays the steps in Streamlit"""
     total_input_tokens = 0
