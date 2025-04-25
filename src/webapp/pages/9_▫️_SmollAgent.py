@@ -10,7 +10,7 @@ from smolagents import (
 
 from src.ai_core.llm import LlmFactory
 from src.webapp.ui_components.llm_config import llm_config_widget
-from src.webapp.ui_components.smoloagents_streamlit import stream_to_streamlit
+from src.webapp.ui_components.smolagents_streamlit import stream_to_streamlit
 
 # MODEL_ID = "gpt_4o_azure"
 MODEL_ID = None

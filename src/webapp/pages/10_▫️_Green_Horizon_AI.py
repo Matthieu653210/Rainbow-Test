@@ -24,7 +24,7 @@ from src.ai_core.llm import LlmFactory
 from src.ai_core.prompts import dedent_ws
 from src.utils.config_mngr import global_config
 from src.webapp.ui_components.llm_config import llm_config_widget
-from src.webapp.ui_components.smoloagents_streamlit import stream_to_streamlit
+from src.webapp.ui_components.smolagents_streamlit import stream_to_streamlit
 
 MODEL_ID = None  # Use the one by configuration
 # MODEL_ID = "qwen_qwq32_deepinfra"
