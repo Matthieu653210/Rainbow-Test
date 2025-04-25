@@ -1,4 +1,8 @@
-# add module doc and docstrings AI!
+"""Utilities for loading tabular data files in Streamlit applications.
+
+Provides functions to handle various file formats and convert them into pandas DataFrames.
+Supports both local files and Streamlit UploadedFile objects.
+"""
 
 import os
 from io import BytesIO
@@ -16,6 +20,18 @@ TABULAR_FILE_FORMATS_READERS = {
 
 
 def load_tabular_data(file_or_filename: Path | UploadedFile, **kwargs) -> pd.DataFrame:
+    """Load tabular data from a file path or Streamlit UploadedFile object.
+
+    Args:
+        file_or_filename: Either a Path object pointing to a file or a Streamlit UploadedFile
+        **kwargs: Additional arguments to pass to the pandas reader function
+
+    Returns:
+        A pandas DataFrame containing the loaded data
+
+    Raises:
+        ValueError: If the file doesn't exist or has an unsupported format
+    """
     if isinstance(file_or_filename, Path):
         assert file_or_filename.exists()
         loaded_file = BytesIO(file_or_filename.read_bytes())
