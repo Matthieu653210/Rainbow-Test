@@ -1,3 +1,5 @@
+# Source : https://raw.githubusercontent.com/huggingface/smolagents/refs/heads/main/src/smolagents/gradio_ui.py
+
 #!/usr/bin/env python
 # coding=utf-8
 # Copyright 2024 The HuggingFace Inc. team. All rights reserved.
@@ -17,12 +19,14 @@
 Streamlit UI components for smolagents integration.
 Provides functions to display agent steps and stream agent outputs in Streamlit apps.
 """
+
 import re
+from typing import Dict, List, Optional
+
 import streamlit as st
-from typing import Optional, List, Dict, Iterator
 from PIL import Image
 from smolagents.agent_types import AgentAudio, AgentImage, AgentText
-from smolagents.agents import PlanningStep, MultiStepAgent
+from smolagents.agents import MultiStepAgent, PlanningStep
 from smolagents.memory import ActionStep, FinalAnswerStep, MemoryStep
 
 
@@ -55,7 +59,7 @@ def _display_step_content(step_log: MemoryStep) -> None:
             first_tool_call = step_log.tool_calls[0]
             args = first_tool_call.arguments
             content = str(args.get("answer", str(args))) if isinstance(args, dict) else str(args).strip()
-            
+
             if first_tool_call.name == "python_interpreter":
                 content = re.sub(r"```.*?\n", "", content)
                 content = re.sub(r"\s*<end_code>\s*", "", content)
@@ -105,9 +109,9 @@ def stream_to_streamlit(
     task_images: Optional[List[Image.Image]] = None,
     reset_agent_memory: bool = False,
     additional_args: Optional[Dict] = None,
-) -> Iterator[None]:
+) -> None:
     """Runs an agent with the given task and streams the messages to Streamlit components.
-    
+
     Args:
         agent: The MultiStepAgent instance to run
         task: The task prompt for the agent
@@ -129,4 +133,3 @@ def stream_to_streamlit(
                 step_log.output_token_count = agent.model.last_output_token_count
 
         _display_step_content(step_log)
-        yield

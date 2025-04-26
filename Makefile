@@ -203,7 +203,7 @@ clean:  ## Clean Python bytecode and cache files
 
 
 backup: ## rsync project and shared files to ln_to_onedrive, a symbolic link from WSL to OneDrive 
-# (created as: ln -s '/mnt/c/Users/a184094/OneDrive - Eviden'  ~/ln_to_onedrive )
+# (created as: ln -s '/mnt/c/Users/a184094/OneDrive - Eviden'  ~/to_onedrive )
 	cp ~/.env ~/.bashrc ~/.dev.bash-profile ~/ln_to_onedrive/backup/wsl/tcl/
 	cp ~/install.sh  ~/ln_to_onedrive/backup/wsl/tcl/
 

@@ -46,6 +46,7 @@ from dotenv import load_dotenv
 from loguru import logger
 from omegaconf import DictConfig, ListConfig, OmegaConf
 from pydantic import BaseModel, ConfigDict
+from upath import UPath
 
 from src.utils.singleton import once
 
@@ -175,8 +176,8 @@ class OmegaConfig(BaseModel):
                 raise ValueError(f"Missing required keys '{key}': {', '.join(missing_keys)}")
         return result
 
-    def get_dir_path(self, key: str, create_if_not_exists: bool = False) -> Path:
-        """Get a directory path.
+    def get_dir_path(self, key: str, create_if_not_exists: bool = False) -> UPath:
+        """Get a directory path. Can be local or remote  (https, S3, webdav, sftp,...)
 
         Args:
             key: Configuration key containing the path
@@ -186,7 +187,7 @@ class OmegaConfig(BaseModel):
         Raises:
             ValueError: If path doesn't exist, is not a directory, or create_if_not_exists=False
         """
-        path = Path(self.get_str(key))
+        path = UPath(self.get_str(key))
         if not path.exists():
             if create_if_not_exists:
                 logger.warning(f"Creating missing directory: {path}")
@@ -197,9 +198,9 @@ class OmegaConfig(BaseModel):
             raise ValueError(f"Path for '{key}' is not a directory: '{path}'")
         return path
 
-    def get_file_path(self, key: str, check_if_exists: bool = True) -> Path:
-        """Get a file path."""
-        path = Path(self.get_str(key))
+    def get_file_path(self, key: str, check_if_exists: bool = True) -> UPath:
+        """Get a file path. Can be local or remote  (https, S3, webdav, sftp,...)"""
+        path = UPath(self.get_str(key))
         if not path.exists() and check_if_exists:
             raise ValueError(f"File path for '{key}' does not exist: '{path}'")
         return path

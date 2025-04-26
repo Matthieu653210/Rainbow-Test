@@ -21,6 +21,7 @@ dependencies = [
     "streamlit-folium>=0.24.1",
     "streamlit-extras>=0.6.0",
     "playwright>=1.51.0",
+    "universal-pathlib>=0.2.6",
 ]
 
 [project.urls]

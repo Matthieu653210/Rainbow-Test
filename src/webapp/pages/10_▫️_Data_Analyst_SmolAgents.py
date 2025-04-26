@@ -4,11 +4,11 @@ from pathlib import Path
 from typing import Any
 
 import folium
-from mcp import ToolsCapability
 import pandas as pd
 import streamlit as st
 from devtools import debug
 from groq import BaseModel
+from pydantic import ConfigDict
 from smolagents import (
     CodeAgent,
     DuckDuckGoSearchTool,
@@ -34,17 +34,46 @@ MODEL_ID = None  # Use the one by configuration
 DATA_PATH = Path.cwd() / "use_case_data/other"
 
 
+class DataFrameTool(Tool):
+    name: str
+    description: str
+    inputs = {
+        "dataset": {
+            "type": "string",
+            "description": "data set required",
+        }
+    }
+    output_type = "object"
+    source_path: Path
+
+    def __init__(self, name: str, description: str, source_path: Path) -> None:
+        super().__init__()
+        self.name = name
+        self.description = f"This tool returns a Pandas DataFrame with content described as: '{description}'"
+        self.source_path = source_path
+        try:
+            import pandas as pd  # noqa: F401
+        except ImportError as e:
+            raise ImportError("You must install package `pandas` to run this tool`.") from e
+
+    def forward(self, dataset: str) -> pd.DataFrame:
+        df = get_cache_dataframe(self.source_path)
+        return df
+
+
 class Demo(BaseModel):
     name: str
-    source: Path | None
     tools: list[Tool] = []
     examples: list[str]
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
+
+SEARCH_TOOLS = [DuckDuckGoSearchTool(), VisitWebpageTool()]
 
 DEMOS = [
     Demo(
         name="Classic SmolAgents",
-        source=None,
+        tools=SEARCH_TOOLS,
         examples=[
             "How many seconds would it take for a leopard at full speed to run through Pont des Arts?",
             "If the US keeps its 2024 growth rate, how many years will it take for the GDP to double?",
@@ -53,7 +82,13 @@ DEMOS = [
     ),
     Demo(
         name="Titanic",
-        source=DATA_PATH / "titanic.csv",
+        tools=[
+            DataFrameTool(
+                name="titanic_data_reader",
+                description="Data related to the Titanic passengers",
+                source_path=DATA_PATH / "titanic.csv",
+            )
+        ],
         examples=[
             "What is the proportion of female passengers that survived?",
             "Were there any notable individuals or families aboard ",
@@ -64,21 +99,26 @@ DEMOS = [
             "What are the demographics (age, gender, etc.) of the passengers on the Titanic?",
         ],
     ),
-    Demo(
-        name="CO2 Emissions",
-        source=DATA_PATH / "country CO2 emissions",
-        examples=[
-            "what was the CO2 emissions of Brazil for energy generation in 2023",
-            "Generate a bar chart with emissions by sector for France in 2022",
-            "Create a pie chart of emissions by sector",
-            "Show the change in emissions from the industrial sector between 2022 and 2024",
-            "Create a simple UI with a multiselect widget and a text ",
-            "Train a ML model to predict the CO2 evolution of France in the next 2 years. Display the curve with historical and predicted data",
-        ],
-    ),
+    # Demo(
+    #     name="CO2 Emissions",
+    #     tools=[
+    #         DataFrameTool(
+    #             name="titanic data reader",
+    #             description="Data related to the Titanic passengers",
+    #             source_path=DATA_PATH / "country CO2 emissions",
+    #         )
+    #     ],
+    #     examples=[
+    #         "what was the CO2 emissions of Brazil for energy generation in 2023",
+    #         "Generate a bar chart with emissions by sector for France in 2022",
+    #         "Create a pie chart of emissions by sector",
+    #         "Show the change in emissions from the industrial sector between 2022 and 2024",
+    #         "Create a simple UI with a multiselect widget and a text ",
+    #         "Train a ML model to predict the CO2 evolution of France in the next 2 years. Display the curve with historical and predicted data",
+    #     ],
+    # ),
     Demo(
         name="Stock Price",
-        source=None,
         examples=[
             "What is the current price of Meta stock?",
             "Show me the historical prices of Apple vs Microsoft stock over the past 6 months",
@@ -86,107 +126,60 @@ DEMOS = [
     ),
     Demo(
         name="Geo",
-        source=None,
+        tools=SEARCH_TOOLS,
         examples=["Display the map of Toulouse"],
     ),
 ]
 
 
 @st.cache_data(show_spinner=True)
-def get_dataframe(file_or_filename: Path | UploadedFile, **kwargs) -> pd.DataFrame | None:
+def get_cache_dataframe(file_or_filename: Path | UploadedFile, **kwargs) -> pd.DataFrame:
     return load_tabular_data(file_or_filename=file_or_filename, **kwargs)
 
-tab_demos, tab_custom = st.tabs(["Demos datasets", "Select yours"])
 
-with tab_custom:
+FILE_SElECT_CHOICE = ":open_file_folder: :orange[Select your file]"
+selected_pill = st.pills("Demos:", options=[demo.name for demo in DEMOS] + [FILE_SElECT_CHOICE], default=DEMOS[0].name)
+
+raw_data_file = None
+df: pd.DataFrame | None = None
+tools = []
+
+if selected_pill == FILE_SElECT_CHOICE:
     raw_data_file = st.file_uploader(
-        "Upload a Data file",
+        "Upload a Data file:",
         type=list(TABULAR_FILE_FORMATS_READERS.keys()),
         # on_change=clear_submit,
     )
-with tab_demos:
-    selected_demo = st.selectbox(
-        "Select a demo",
-        options=[demo.name for demo in DEMOS],
-        index=0,
-        key="selected_demo"
-    )
-    
-    demo = next(d for d in DEMOS if d.name == selected_demo)
-    raw_data_file = demo.source
-    
-    col1, col2 = st.columns(2)
-    with col1:
-        st.write("**Available Tools:**")
-        for tool in demo.tools:
-            st.write(f"- {tool.name}")
-    
+else:
+    demo = next(d for d in DEMOS if d.name == selected_pill)
+    tools = demo.tools
+
+    col1, col2 = st.columns([3, 1])
     with col2:
+        st.write("**Available Tools:**")
+        for tool in tools:
+            st.write(f"- {tool.name}")
+
+    with col1:
         st.write("**Example Prompts:**")
-        for example in demo.examples:
-            if st.button(example, use_container_width=True):
-                input = example
-    ...
+        st.write(demo.examples)
 
 
-df_0: pd.DataFrame | None = None
-df: pd.DataFrame | None = None
+if raw_data_file:
+    with st.expander(label="Loaded Dataframe", expanded=True):
+        args = {}
+        df = get_cache_dataframe(raw_data_file, **args)
 
 
-with st.expander(label="Loaded Dataframe", expanded=True):
-    skiprows = (
-        st.number_input(
-            "skip rows:",
-            min_value=0,
-            max_value=99,
-            value=0,
-            step=1,
-        )
-        - 1
-    )
-    args = {"skiprows": skiprows}
-    if raw_data_file:
-        file = raw_data_file
-    if file:
-        df = get_dataframe(file, **args)
-        
+class DisplayAnswerTool(Tool):
+    name = "print_answer"
+    description = "Display a final answer to the given query."
+    inputs = {"answer": {"type": "any", "description": "The final answer to the problem"}}
+    output_type = "any"
 
-
-#    "Create a UI to compare evolution of CO2 emisssions of countries (selected with a multiselect widget)",
-
-
-# @tool
-# def get_follium_map() -> folium.Map:
-#     """
-#     Display a map at a given location (a country, a town, an address, ....)
-#     Args:
-#         latitude : latitude of the location
-#         longitude: longitude of the location
-#     """
-
-#     folium_map().location = [latitude, longitude]
-
-
-@tool
-def get_CO2_emissions_data_frame() -> pd.DataFrame:
-    """Get CO2 emissions data frame for agent tools.
-
-    Returns:
-        DataFrame with emissions data by country and sector.
-    """
-    return get_data("country CO2 emissions")
-
-
-@tool
-def print_answer(answer: Any) -> None:
-    """Provides a final answer to the given query
-
-    Args:
-        answer : The final answer to the query. Can be either markdown string, or a Follium.Map object, or a Path to an image, or a Pandas Dataframe.
-    """
-
-    st.session_state.agent_output.append(answer)
-    print("answer displayed: {answer}")
+    def forward(self, answer: Any) -> Any:
+        st.session_state.agent_output.append(answer)
+        return "answer displayed: {answer}"
 
 
 def update_display() -> None:
@@ -200,22 +193,17 @@ def update_display() -> None:
         elif isinstance(msg, Path):
             st.image(msg)
         else:
-            st.write(f"unhandled type : '{type(msg)}")
+            st.write(msg)
 
 
-st.title("Green Horizon AI Chat")
+st.title("Versatile Analytics AI Agent")
 llm_config_widget(st.sidebar)
 
 model_name = LlmFactory(llm_id=MODEL_ID).get_litellm_model_name()
 llm = LiteLLMModel(model_id=model_name)
 
-
 if "agent_output" not in st.session_state:
     st.session_state.agent_output = []
-
-
-with st.expander(label="Prompt examples", expanded=True):
-    st.write(SAMPLE_PROMPTS)
 
 AUTHORIZED_IMPORTS = [
     "pathlib",
@@ -261,15 +249,14 @@ PRE_PROMPT = dedent_ws(
     """
 )
 
-# When  displaying an image, call st.makdown with <img> tag and base64 encoded file.  Don't forget  unsafe_allow_html=True option.\n
-
 
 col1, col2 = st.columns(2)
 with col1:
-    if prompt := st.chat_input("What would you like to ask SmolAgents?"):
+    if prompt := st.chat_input("What would you like to ask ?"):
         # st.session_state.agent_output = []
+        tools += [DisplayAnswerTool()]
         agent = CodeAgent(
-            tools=[get_CO2_emissions_data_frame, print_answer, DuckDuckGoSearchTool(), VisitWebpageTool()],
+            tools=tools,
             model=llm,
             additional_authorized_imports=AUTHORIZED_IMPORTS,
             max_steps=5,  # for debug

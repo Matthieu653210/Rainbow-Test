@@ -1,7 +1,7 @@
 """Utilities for loading tabular data files in Streamlit applications.
 
 Provides functions to handle various file formats and convert them into pandas DataFrames.
-Supports both local files and Streamlit UploadedFile objects.
+Supports both Path compatible pathnames and Streamlit UploadedFile objects.
 """
 
 import os
